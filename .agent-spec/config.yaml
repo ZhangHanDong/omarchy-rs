@@ -1,0 +1,7 @@
+paths:
+  knowledge: knowledge
+  specs: specs
+liveness:
+  gate:
+    violated: error
+    unproven: warning

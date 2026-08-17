@@ -1,0 +1,4 @@
+/target/
+/.agent-spec/runs/
+/.agent-spec/trace/
+*.profraw
