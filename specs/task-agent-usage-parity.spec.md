@@ -19,12 +19,16 @@ activation and rollback do not affect official Omarchy upgrades.
 ## Decisions
 
 - Treat the checked-out `../omarchy/bin/omarchy-agent-usage-*` scripts as the fixture compatibility baseline.
-- Parse Codex logs through ZhangHanDong/ccusage revision `9f6c0305743f29c99dbfa2ade54065e66632a2bb` behind an internal backend.
+- Parse Codex logs through ZhangHanDong/ccusage revision `03d8f07b867521cb74dd48af0379b3ffdc413c94` behind an internal backend.
 - Start with Codex; add Claude and Fireworks only after the shared contract passes.
 - Keep the upstream JSON state schema and atomic file replacement semantics.
 - Resolve fallback through an absolute upstream executable path to prevent recursion.
 - Use synthetic local fixtures; tests and benchmarks perform no network access and read no real HOME state.
-- Primary performance metrics are CPU time and bytes read for an unchanged warm fixture; numeric activation thresholds remain unresolved until the baseline harness is run.
+- Primary performance metrics are CPU time and bytes read for an unchanged warm fixture; the activation thresholds below are fixed before candidate measurement.
+- Default activation requires at least 30% lower CPU time and 20% lower p95 wall time, with no more than 20% higher maximum RSS or 10% more bytes read.
+- A strong replacement claim requires either 50% lower CPU time, 2x wall-time speedup, or 40% lower measured daily CPU work at the upstream refresh interval.
+- Stability admission requires 1,000 repeated valid runs without crash or panic, deterministic normalized output, and no partial JSON during concurrent-reader atomic-write stress.
+- Energy improvement is claimed only from package-energy measurements; CPU-time reduction is labeled an energy proxy.
 
 ## Boundaries
 
@@ -36,6 +40,7 @@ activation and rollback do not affect official Omarchy upgrades.
 - benches/agent_usage/**
 - packaging/**
 - docs/components/agent-usage.md
+- docs/benchmarks/**
 - knowledge/**
 - specs/task-agent-usage-parity.spec.md
 
@@ -132,6 +137,31 @@ Scenario: Missing improvement or resource regression prevents default activation
   When default-activation eligibility is evaluated
   Then the replacement remains disabled by default
 
+Scenario: Numeric performance gate controls eligibility
+  Test:
+    Package: omarchy-compat
+    Filter: eligibility_enforces_codex_numeric_thresholds
+    Level: unit
+    Test Double: benchmark_reports
+    Targets: crates/omarchy-compat/src/eligibility.rs, tests/agent_usage/eligibility.rs
+  Given a parity-passing report with candidate and upstream confidence intervals
+  When Codex default-activation eligibility is evaluated
+  Then CPU time is at least 30% lower and p95 wall time is at least 20% lower
+  And maximum RSS is no more than 20% higher and bytes read are no more than 10% higher
+
+Scenario: Repeated runs and concurrent reads remain stable
+  Mode: optimize
+  Test:
+    Package: omarchy-agents
+    Filter: stability_report_meets_codex_gate
+    Level: integration
+    Test Double: synthetic_valid_malformed_and_atomic_write_fixtures
+    Targets: benches/agent_usage/codex.rs, tests/agent_usage/stability_report.rs
+  Given 1,000 repeated valid and malformed runs plus concurrent state-file readers
+  When the stability campaign completes
+  Then crash and panic counts are zero and normalized valid outputs are deterministic
+  And every observed state file is one complete valid JSON document
+
 Scenario: Benchmark report excludes sensitive fixture markers
   Test:
     Package: omarchy-agents
@@ -152,5 +182,6 @@ Scenario: Benchmark report excludes sensitive fixture markers
 
 ## Questions
 
-- What CPU-time or bytes-read improvement is sufficient for default activation?
+- [x] Default activation gate: CPU -30%, p95 wall -20%, RSS <= +20%, bytes read <= +10%.
+- [x] Stability gate: 1,000 runs, zero crash/panic, deterministic normalized output, atomic JSON only.
 - [x] First fixture baseline: Omarchy `f32ebbdb730c4e8fe11e4046cef4267e466264ea`.

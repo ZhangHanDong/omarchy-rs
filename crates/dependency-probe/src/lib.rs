@@ -229,6 +229,8 @@ mod tests {
         assert!(record.changed_paths.iter().all(|path| {
             path == "docs/omarchy-rs-fork.md"
                 || path.starts_with("rust/crates/ccusage-core/")
+                || path == "rust/adapters/codex/src/lib.rs"
+                || path == "rust/adapters/codex/src/loader.rs"
                 || (path.starts_with("rust/") && path.ends_with("Cargo.toml"))
         }));
 

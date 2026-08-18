@@ -36,9 +36,11 @@ Against Omarchy `f32ebbdb730c4e8fe11e4046cef4267e466264ea`, no candidate
 is accepted directly into a production crate:
 
 - The ZhangHanDong ccusage fork is selected as the offline parsing basis at
-  `9f6c0305743f29c99dbfa2ade54065e66632a2bb`, based on upstream
+  `03d8f07b867521cb74dd48af0379b3ffdc413c94`, based on upstream
   `95d0528c61c6748463f0fbaf119b6c2521a42b32`. Its maintained patch stack adds
-  deterministic `models-dev-pricing-only` builds. Exact Git pins and an
+  deterministic `models-dev-pricing-only` builds and a generic option for
+  consumers that must preserve per-file events instead of deduplicating them.
+  Exact Git pins and an
   internal backend contain the unpublished API risk; Omarchy-specific behavior
   is forbidden from the fork.
 - `tokenusage` 1.5.2 is an adaptation fallback, not a direct dependency. Its

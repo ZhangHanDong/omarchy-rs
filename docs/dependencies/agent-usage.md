@@ -10,7 +10,7 @@ a real home directory, credential store, or provider endpoint.
 | Candidate | Pin | Boundary | Outcome |
 | --- | --- | --- | --- |
 | `tokenusage` | 1.5.2 | Local parsers plus unconditional HTTP and credential code | Adapt |
-| ZhangHanDong/ccusage Rust adapters | `9f6c0305743f29c99dbfa2ade54065e66632a2bb` | Pinned offline fork with deterministic pricing and license metadata | Selected adaptation |
+| ZhangHanDong/ccusage Rust adapters | `03d8f07b867521cb74dd48af0379b3ffdc413c94` | Pinned offline fork with deterministic pricing, configurable directory deduplication, and license metadata | Selected adaptation |
 | `claude-usage` | 0.2.3 | Credential-backed Anthropic OAuth request | Isolate |
 
 No unmodified candidate is directly accepted as a production dependency. The
