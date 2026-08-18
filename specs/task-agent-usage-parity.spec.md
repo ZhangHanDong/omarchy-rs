@@ -77,6 +77,18 @@ Scenario: Malformed Codex records preserve partial-failure behavior
   When upstream and Rust collectors scan the fixture
   Then skipped records, persisted state, diagnostics, and exit status are equivalent
 
+Scenario: Codex app-server limits preserve RPC field parity
+  Test:
+    Package: omarchy-agents
+    Filter: codex_rpc_fake_app_server_round_trip
+    Level: integration
+    Test Double: fake_codex_app_server
+    Targets: crates/omarchy-agents/src/rpc.rs
+  Given a fake Codex app-server that returns account and primary and secondary rate-limit windows
+  When the Rust collector completes initialize, account/read, and account/rateLimits/read
+  Then limits, tierLabel, usageStatusText, and authHelpText match the upstream JSON shape
+  And no provider network or credential store is accessed
+
 Scenario: Collector state file keeps schema and atomic replacement parity
   Test:
     Package: omarchy-agents
@@ -102,6 +114,18 @@ Scenario: Shadow mode preserves upstream output while recording local parity
   When the shadow collector runs with the same arguments and environment
   Then stdout and exit status come from upstream even if the Rust candidate fails or differs
   And the parity receipt contains field names but no usage values, credentials, or prompt content
+
+Scenario: Canary mode fails open on every unverified compatibility surface
+  Test:
+    Package: omarchy-compat
+    Filter: canary_requires_fingerprint_sources_flags_and_valid_rpc
+    Level: unit
+    Test Double: compatibility_inputs
+    Targets: crates/omarchy-compat/src/shadow.rs
+  Given the upstream fingerprint, external-source presence, requested flags, and Rust RPC status
+  When canary eligibility is evaluated
+  Then Rust is selected only for the verified fingerprint without Pi, OMP, OpenCode, limits-only, or RPC failure
+  And every other combination selects the absolute Python fallback
 
 Scenario: Compatible shim resolves to Rust and rolls back offline
   Test:

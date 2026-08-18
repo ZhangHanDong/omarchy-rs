@@ -2,7 +2,7 @@ use std::{collections::BTreeMap, path::Path};
 
 use serde_json::Value;
 
-const LOCAL_FIELDS: &[&str] = &[
+const COMPARED_FIELDS: &[&str] = &[
     "hasLocalStats",
     "todayPrompts",
     "todaySessions",
@@ -14,12 +14,30 @@ const LOCAL_FIELDS: &[&str] = &[
     "activeDays",
     "activeDates",
     "modelUsage",
+    "limits",
+    "tierLabel",
+    "usageStatusText",
+    "authHelpText",
 ];
 
 #[derive(Debug, Eq, PartialEq)]
 pub struct ShadowComparison {
     pub local_fields_match: bool,
     pub differing_fields: Vec<String>,
+}
+
+pub fn canary_eligible(
+    upstream_fingerprint_matches: bool,
+    has_external_sources: bool,
+    limits_only: bool,
+    candidate: &Value,
+) -> bool {
+    upstream_fingerprint_matches
+        && !has_external_sources
+        && !limits_only
+        && validate_record(&serde_json::to_vec(candidate).unwrap_or_default()).is_ok()
+        && candidate.get("usageStatusText").and_then(Value::as_str)
+            != Some("Codex limits unavailable")
 }
 
 pub fn validate_record(bytes: &[u8]) -> Result<Value, String> {
@@ -39,7 +57,7 @@ pub fn validate_record(bytes: &[u8]) -> Result<Value, String> {
 }
 
 pub fn compare_local_fields(candidate: &Value, upstream: &Value) -> ShadowComparison {
-    let differing_fields = LOCAL_FIELDS
+    let differing_fields = COMPARED_FIELDS
         .iter()
         .filter(|field| candidate.get(**field) != upstream.get(**field))
         .map(|field| (*field).to_string())
@@ -102,5 +120,17 @@ mod tests {
     fn invalid_candidate_record_is_rejected() {
         assert!(validate_record(br#"{"schemaVersion":1}"#).is_err());
         assert!(validate_record(b"not json").is_err());
+    }
+
+    #[test]
+    fn canary_requires_fingerprint_sources_flags_and_valid_rpc() {
+        let valid = record(1);
+        assert!(canary_eligible(true, false, false, &valid));
+        assert!(!canary_eligible(false, false, false, &valid));
+        assert!(!canary_eligible(true, true, false, &valid));
+        assert!(!canary_eligible(true, false, true, &valid));
+        let mut failed_rpc = valid;
+        failed_rpc["usageStatusText"] = "Codex limits unavailable".into();
+        assert!(!canary_eligible(true, false, false, &failed_rpc));
     }
 }

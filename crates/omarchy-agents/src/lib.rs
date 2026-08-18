@@ -1,6 +1,7 @@
 pub mod benchmark;
 mod ccusage_backend;
 pub mod codex;
+pub mod rpc;
 
 use std::path::Path;
 

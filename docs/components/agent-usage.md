@@ -2,8 +2,8 @@
 
 The first live deployment mode is deliberately non-authoritative. The
 `omarchy-agent-usage-codex-shadow` executable runs the installed absolute
-Python collector, independently computes Rust local-session statistics, and
-compares only the documented local fields. It always returns the upstream
+Python collector, independently computes the Rust record, and compares the
+documented local and app-server RPC fields. It always returns the upstream
 stdout and exit status. Candidate failures and differences therefore cannot
 change the panel record.
 
@@ -41,3 +41,9 @@ Shadow success is evidence for local-stat parity, not permission to return the
 Rust record. Direct replacement remains blocked until app-server limits,
 Pi/OMP, OpenCode, cache behavior, activation eligibility, and rollback tests
 all pass the task Contract.
+
+The optional `OMARCHY_RS_CODEX_MODE=canary` path is narrower than general
+activation. It returns Rust only for the exact verified upstream fingerprint,
+when Pi/OMP and OpenCode sources are absent, `--limits-only` was not requested,
+and the Rust app-server probe did not report a protocol failure. Every rejected
+condition executes the absolute Python collector. Shadow remains the default.

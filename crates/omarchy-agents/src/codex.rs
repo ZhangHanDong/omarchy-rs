@@ -4,7 +4,19 @@ use std::path::Path;
 use chrono::{DateTime, Duration, Local, Utc};
 use serde_json::{Value, json};
 
-use crate::load_codex_events_from_directory;
+use crate::{load_codex_events_from_directory, rpc::fetch_codex_rpc};
+
+pub fn collect_record(sessions_dir: &Path) -> Result<Value, String> {
+    let mut record = collect_local_record(sessions_dir)?;
+    let rpc = fetch_codex_rpc();
+    let object = record.as_object_mut().ok_or("record is not an object")?;
+    for field in ["limits", "tierLabel", "usageStatusText", "authHelpText"] {
+        if let Some(value) = rpc.get(field) {
+            object.insert(field.to_string(), value.clone());
+        }
+    }
+    Ok(record)
+}
 
 pub fn collect_local_record(sessions_dir: &Path) -> Result<Value, String> {
     let events = load_codex_events_from_directory(sessions_dir)?;
