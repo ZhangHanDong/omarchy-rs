@@ -1,13 +1,12 @@
 use std::{env, fs, path::PathBuf, process::Command};
 
+use omarchy_compat::activation::CLAUDE_UPSTREAM_SHA256;
 use omarchy_compat::shadow::{
     claude_canary_eligible, validate_provider_record, verified_absolute_executable,
 };
 use sha2::{Digest, Sha256};
 
 const DEFAULT_UPSTREAM: &str = "/usr/share/omarchy/bin/omarchy-agent-usage-claude";
-const VERIFIED_UPSTREAM_SHA256: &str =
-    "88938e35170a5ef8da30b665114740440eb3bd68dba9579a818e8b02c4a0ffc3";
 
 fn main() -> Result<(), String> {
     let upstream = env::var_os("OMARCHY_RS_CLAUDE_UPSTREAM")
@@ -26,7 +25,7 @@ fn main() -> Result<(), String> {
     if env::var("OMARCHY_RS_CLAUDE_MODE").as_deref() == Ok("canary")
         && let Ok(record) = &candidate
         && claude_canary_eligible(
-            upstream_fingerprint(&upstream).as_deref() == Ok(VERIFIED_UPSTREAM_SHA256),
+            upstream_fingerprint(&upstream).as_deref() == Ok(CLAUDE_UPSTREAM_SHA256),
             has_external_sources(),
             args.iter().any(|arg| arg == "--limits-only"),
             record,

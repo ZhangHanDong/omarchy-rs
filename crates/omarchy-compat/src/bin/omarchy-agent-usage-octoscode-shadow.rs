@@ -5,13 +5,12 @@ use std::{
     process::Command,
 };
 
+use omarchy_compat::activation::OCTOSCODE_UPSTREAM_SHA256;
 use omarchy_compat::shadow::{
     octoscode_canary_eligible, validate_provider_record, verified_absolute_executable,
 };
 use serde_json::Value;
 use sha2::{Digest, Sha256};
-
-const VERIFIED_SHA256: &str = "d67554a97fd4c27bec3c1557f06fba4498aaebe949eb8836d7c145ce9a9b707a";
 
 fn main() -> Result<(), String> {
     let upstream = env::var_os("OMARCHY_RS_OCTOSCODE_UPSTREAM")
@@ -23,7 +22,10 @@ fn main() -> Result<(), String> {
         .ok_or("HOME and OMARCHY_RS_OCTOSCODE_UPSTREAM are unset")?;
     verified_absolute_executable(&upstream)?;
     let args = env::args().skip(1).collect::<Vec<_>>();
-    if args.iter().any(|arg| arg != "--write") {
+    if args
+        .iter()
+        .any(|arg| !matches!(arg.as_str(), "--write" | "--force" | "--limits-only"))
+    {
         return fallback(&upstream, &args);
     }
     let home = env::var_os("OCTOS_HOME")
@@ -33,7 +35,7 @@ fn main() -> Result<(), String> {
     let candidate = omarchy_agents::octoscode::collect_record(&home);
     let record = if env::var("OMARCHY_RS_OCTOSCODE_MODE").as_deref() == Ok("canary")
         && octoscode_canary_eligible(
-            fingerprint(&upstream).as_deref() == Ok(VERIFIED_SHA256),
+            fingerprint(&upstream).as_deref() == Ok(OCTOSCODE_UPSTREAM_SHA256),
             &candidate,
         ) {
         candidate

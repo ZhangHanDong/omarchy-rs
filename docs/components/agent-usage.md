@@ -37,27 +37,25 @@ It is admitted only for the verified Python collector fingerprint. A changed
 upstream, an invalid Rust record, or an unsupported argument executes the
 original absolute Python collector instead. State writes use an atomic rename.
 
-## Local test deployment
+## User overlay deployment
 
-This machine installs the updater and provider shadow binaries under
-`~/.local/share/omarchy-rs/bin`. The user Hyprland configuration prepends that
-directory to the graphical-session `PATH`; no file under
-`/usr/share/omarchy` is modified. Activation is valid only when the Quickshell
-process resolves `omarchy-agent-usage-update` from this overlay directory.
+`omarchy-rs install` installs the updater and provider shadows under
+`~/.local/share/omarchy-rs/libexec`; `activate agent-usage` creates the single
+updater shim under the adjacent `bin` directory. The CLI refuses activation
+unless that directory precedes `/usr/share/omarchy/bin` in PATH. No file under
+`/usr/share/omarchy` is modified.
 
-Octoscode is invoked by its user systemd service directly from that overlay
-directory with `OMARCHY_RS_OCTOSCODE_MODE=canary`; the original collector under
-`~/.local/bin` remains installed for fallback.
+The activation record enables Codex, Claude Code, and Octoscode. The updater
+passes their canary modes to sibling shadows; original collectors remain
+installed for fallback.
 
 ## Offline rollback
 
-Remove or rename
-`~/.local/share/omarchy-rs/bin/omarchy-agent-usage-update`, then restart the
-Omarchy shell. The retained PATH entry contains no matching updater and command
-resolution falls through to
-`/usr/share/omarchy/bin/omarchy-agent-usage-update`. Removing the companion
-shadow binary is optional after the updater is disabled. Rollback needs no
-network access and does not reconstruct or edit an Omarchy package file.
+Run `omarchy-rs rollback agent-usage`, then restart the Omarchy shell if its
+process predates the PATH change. The retained PATH entry contains no matching
+updater and command resolution falls through to the official updater. Rollback
+needs no network access and does not reconstruct or edit an Omarchy package
+file.
 
 Shadow success is evidence for local-stat parity, not permission to return the
 Rust record. Direct replacement remains blocked until app-server limits,

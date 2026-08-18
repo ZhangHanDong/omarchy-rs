@@ -1,5 +1,6 @@
 use std::{env, fs, path::PathBuf, process::Command};
 
+use omarchy_compat::activation::CODEX_UPSTREAM_SHA256;
 use omarchy_compat::shadow::{
     canary_eligible, compare_local_fields, sanitized_receipt, validate_record,
     verified_absolute_executable,
@@ -7,8 +8,6 @@ use omarchy_compat::shadow::{
 use sha2::{Digest, Sha256};
 
 const DEFAULT_UPSTREAM: &str = "/usr/share/omarchy/bin/omarchy-agent-usage-codex";
-const VERIFIED_UPSTREAM_SHA256: &str =
-    "0d36d856439f17749dc8a25c56607e8462de72fde91f384abc370fbc78113b14";
 
 fn main() -> Result<(), String> {
     let upstream = env::var_os("OMARCHY_RS_CODEX_UPSTREAM")
@@ -25,7 +24,7 @@ fn main() -> Result<(), String> {
     if env::var("OMARCHY_RS_CODEX_MODE").as_deref() == Ok("canary")
         && let Ok(record) = &candidate
         && canary_eligible(
-            upstream_fingerprint(&upstream).as_deref() == Ok(VERIFIED_UPSTREAM_SHA256),
+            upstream_fingerprint(&upstream).as_deref() == Ok(CODEX_UPSTREAM_SHA256),
             has_external_sources(),
             args.iter().any(|arg| arg == "--limits-only"),
             record,

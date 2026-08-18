@@ -1,6 +1,6 @@
 [workspace]
 resolver = "3"
-members = ["crates/dependency-probe", "crates/omarchy-agents", "crates/omarchy-compat"]
+members = ["crates/dependency-probe", "crates/omarchy-agents", "crates/omarchy-cli", "crates/omarchy-compat"]
 
 [workspace.package]
 edition = "2024"

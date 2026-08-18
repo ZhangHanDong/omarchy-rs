@@ -13,9 +13,20 @@ fn main() -> Result<ExitCode, String> {
         .map(PathBuf::from)
         .unwrap_or_else(|| PathBuf::from(DEFAULT_UPSTREAM_UPDATE));
     require_absolute_file(&upstream)?;
-    let codex_wanted = agent_is_wanted(&args, "codex")?;
-    let claude_wanted = agent_is_wanted(&args, "claude")?;
-    if !codex_wanted && !claude_wanted {
+    let activation = omarchy_compat::activation::load_activation();
+    let codex_wanted = agent_is_wanted(&args, "codex")?
+        && activation
+            .as_ref()
+            .is_some_and(|config| config.enables("codex"));
+    let claude_wanted = agent_is_wanted(&args, "claude")?
+        && activation
+            .as_ref()
+            .is_some_and(|config| config.enables("claude"));
+    let octoscode_wanted = agent_is_wanted(&args, "octoscode")?
+        && activation
+            .as_ref()
+            .is_some_and(|config| config.enables("octoscode"));
+    if !codex_wanted && !claude_wanted && !octoscode_wanted {
         return command_status(&upstream, &args);
     }
 
@@ -26,13 +37,34 @@ fn main() -> Result<ExitCode, String> {
     if claude_wanted {
         upstream_args.extend(["--except".into(), "claude".into()]);
     }
+    if octoscode_wanted {
+        upstream_args.extend(["--except".into(), "octoscode".into()]);
+    }
     let other_status = command_status(&upstream, &upstream_args)?;
     let mut collector_ok = true;
     if codex_wanted {
-        collector_ok &= run_shadow(&args, "codex", "OMARCHY_RS_CODEX_SHADOW")?;
+        collector_ok &= run_shadow(
+            &args,
+            "codex",
+            "OMARCHY_RS_CODEX_SHADOW",
+            "OMARCHY_RS_CODEX_MODE",
+        )?;
     }
     if claude_wanted {
-        collector_ok &= run_shadow(&args, "claude", "OMARCHY_RS_CLAUDE_SHADOW")?;
+        collector_ok &= run_shadow(
+            &args,
+            "claude",
+            "OMARCHY_RS_CLAUDE_SHADOW",
+            "OMARCHY_RS_CLAUDE_MODE",
+        )?;
+    }
+    if octoscode_wanted {
+        collector_ok &= run_shadow(
+            &args,
+            "octoscode",
+            "OMARCHY_RS_OCTOSCODE_SHADOW",
+            "OMARCHY_RS_OCTOSCODE_MODE",
+        )?;
     }
 
     Ok(if other_status == ExitCode::SUCCESS && collector_ok {
@@ -65,13 +97,19 @@ fn agent_is_wanted(args: &[String], agent: &str) -> Result<bool, String> {
     Ok(!excluded.contains(&agent) && (only.is_empty() || only.contains(&agent)))
 }
 
-fn run_shadow(args: &[String], agent: &str, env_name: &str) -> Result<bool, String> {
+fn run_shadow(
+    args: &[String],
+    agent: &str,
+    env_name: &str,
+    mode_env: &str,
+) -> Result<bool, String> {
     let default_name = format!("omarchy-agent-usage-{agent}-shadow");
     let shadow = env::var_os(env_name)
         .map(PathBuf::from)
         .unwrap_or(current_sibling(&default_name)?);
     require_absolute_file(&shadow)?;
     let output = Command::new(shadow)
+        .env(mode_env, "canary")
         .args(
             args.iter()
                 .filter(|arg| matches!(arg.as_str(), "--force" | "--limits-only")),

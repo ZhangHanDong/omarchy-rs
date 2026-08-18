@@ -979,10 +979,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "omarchy-cli"
+version = "0.1.0"
+dependencies = [
+ "omarchy-compat",
+ "serde",
+ "serde_json",
+ "sha2",
+ "tempfile",
+]
+
+[[package]]
 name = "omarchy-compat"
 version = "0.1.0"
 dependencies = [
  "omarchy-agents",
+ "serde",
  "serde_json",
  "sha2",
  "tempfile",

@@ -21,9 +21,9 @@ Official Omarchy remains responsible for the desktop, system configuration,
 updates, migrations, and packages. `omarchy-rs` must not write into paths owned
 by `omarchy` or `omarchy-settings`.
 
-## Planned workspace
+## Workspace
 
-- `omarchy-cli`: multicall entry point, diagnostics, and explicit fallback.
+- `omarchy-cli`: lifecycle entry point, diagnostics, activation, and rollback.
 - `omarchy-compat`: upstream discovery, fingerprints, activation, rollback,
   precedence probes, and eligibility decisions.
 - `omarchy-agents`: Agent Usage collectors and shared parsing model.
@@ -32,9 +32,11 @@ by `omarchy` or `omarchy-settings`.
 
 ## Deployment model
 
-The canonical binary is planned for `/usr/local/lib/omarchy-rs/`. Selected
-shims live in `/usr/local/bin/` only after a probe proves they precede the
-official command in the target session. Packaging must not claim or overwrite
+The initial canonical binaries live under
+`$XDG_DATA_HOME/omarchy-rs/libexec`. Selected shims live under the adjacent
+`bin` directory only after a probe proves it precedes the official command in
+the target session. A future system-wide package may use
+`/usr/local/lib/omarchy-rs`, but packaging must never claim or overwrite
 `/usr/bin/omarchy*`, `/usr/share/omarchy/**`, or `/etc/omarchy.conf`.
 
 Absolute invocations of `$OMARCHY_PATH/bin/...` bypass PATH overlays. Supporting
