@@ -230,7 +230,10 @@ mod tests {
             path == "docs/omarchy-rs-fork.md"
                 || path.starts_with("rust/crates/ccusage-core/")
                 || path == "rust/adapters/codex/src/lib.rs"
+                || path == "rust/adapters/codex/src/aggregate.rs"
                 || path == "rust/adapters/codex/src/loader.rs"
+                || path == "rust/adapters/codex/src/parser.rs"
+                || path == "rust/adapters/codex/src/replay.rs"
                 || (path.starts_with("rust/") && path.ends_with("Cargo.toml"))
         }));
 

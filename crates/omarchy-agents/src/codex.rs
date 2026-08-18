@@ -1,7 +1,7 @@
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::Path;
 
-use chrono::{Duration, Local, Utc};
+use chrono::{DateTime, Duration, Local, Utc};
 use serde_json::{Value, json};
 
 use crate::load_codex_events_from_directory;
@@ -27,11 +27,7 @@ pub fn collect_local_record(sessions_dir: &Path) -> Result<Value, String> {
     let mut today_total_tokens = 0_u64;
 
     for event in &events {
-        let day = event
-            .timestamp
-            .get(..10)
-            .unwrap_or(&today_string)
-            .to_string();
+        let day = local_day(&event.timestamp).unwrap_or_else(|| today_string.clone());
         let model = event.model.as_deref().unwrap_or("codex").to_string();
         let input = event.input_tokens.saturating_sub(event.cached_input_tokens);
         let total = input + event.cached_input_tokens + event.output_tokens;
@@ -79,4 +75,10 @@ pub fn collect_local_record(sessions_dir: &Path) -> Result<Value, String> {
         "limits": [], "tierLabel": "", "usageStatusText": "Codex unavailable",
         "authHelpText": "codex not found in PATH"
     }))
+}
+
+fn local_day(timestamp: &str) -> Option<String> {
+    DateTime::parse_from_rfc3339(timestamp)
+        .ok()
+        .map(|timestamp| timestamp.with_timezone(&Local).date_naive().to_string())
 }

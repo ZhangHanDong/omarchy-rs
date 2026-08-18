@@ -115,7 +115,7 @@ dependencies = [
 [[package]]
 name = "ccusage-adapter-codex"
 version = "0.0.0"
-source = "git+https://github.com/ZhangHanDong/ccusage?rev=03d8f07b867521cb74dd48af0379b3ffdc413c94#03d8f07b867521cb74dd48af0379b3ffdc413c94"
+source = "git+https://github.com/ZhangHanDong/ccusage?rev=97f5b4e71864408c4df5a9758639d253caf57dce#97f5b4e71864408c4df5a9758639d253caf57dce"
 dependencies = [
  "ccusage-adapter-common",
  "ccusage-core",
@@ -130,7 +130,7 @@ dependencies = [
 [[package]]
 name = "ccusage-adapter-common"
 version = "0.0.0"
-source = "git+https://github.com/ZhangHanDong/ccusage?rev=03d8f07b867521cb74dd48af0379b3ffdc413c94#03d8f07b867521cb74dd48af0379b3ffdc413c94"
+source = "git+https://github.com/ZhangHanDong/ccusage?rev=97f5b4e71864408c4df5a9758639d253caf57dce#97f5b4e71864408c4df5a9758639d253caf57dce"
 dependencies = [
  "ccusage-core",
  "serde",
@@ -140,12 +140,12 @@ dependencies = [
 [[package]]
 name = "ccusage-cli"
 version = "0.0.0"
-source = "git+https://github.com/ZhangHanDong/ccusage?rev=03d8f07b867521cb74dd48af0379b3ffdc413c94#03d8f07b867521cb74dd48af0379b3ffdc413c94"
+source = "git+https://github.com/ZhangHanDong/ccusage?rev=97f5b4e71864408c4df5a9758639d253caf57dce#97f5b4e71864408c4df5a9758639d253caf57dce"
 
 [[package]]
 name = "ccusage-core"
 version = "0.0.0"
-source = "git+https://github.com/ZhangHanDong/ccusage?rev=03d8f07b867521cb74dd48af0379b3ffdc413c94#03d8f07b867521cb74dd48af0379b3ffdc413c94"
+source = "git+https://github.com/ZhangHanDong/ccusage?rev=97f5b4e71864408c4df5a9758639d253caf57dce#97f5b4e71864408c4df5a9758639d253caf57dce"
 dependencies = [
  "ccusage-cli",
  "ccusage-terminal",
@@ -161,7 +161,7 @@ dependencies = [
 [[package]]
 name = "ccusage-terminal"
 version = "0.0.0"
-source = "git+https://github.com/ZhangHanDong/ccusage?rev=03d8f07b867521cb74dd48af0379b3ffdc413c94#03d8f07b867521cb74dd48af0379b3ffdc413c94"
+source = "git+https://github.com/ZhangHanDong/ccusage?rev=97f5b4e71864408c4df5a9758639d253caf57dce#97f5b4e71864408c4df5a9758639d253caf57dce"
 dependencies = [
  "terminal_size",
  "unicode-width",
@@ -957,6 +957,16 @@ dependencies = [
  "ccusage-core",
  "chrono",
  "serde",
+ "serde_json",
+ "sha2",
+ "tempfile",
+]
+
+[[package]]
+name = "omarchy-compat"
+version = "0.1.0"
+dependencies = [
+ "omarchy-agents",
  "serde_json",
  "sha2",
  "tempfile",

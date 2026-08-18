@@ -36,7 +36,7 @@ Against Omarchy `f32ebbdb730c4e8fe11e4046cef4267e466264ea`, no candidate
 is accepted directly into a production crate:
 
 - The ZhangHanDong ccusage fork is selected as the offline parsing basis at
-  `03d8f07b867521cb74dd48af0379b3ffdc413c94`, based on upstream
+  `97f5b4e71864408c4df5a9758639d253caf57dce`, based on upstream
   `95d0528c61c6748463f0fbaf119b6c2521a42b32`. Its maintained patch stack adds
   deterministic `models-dev-pricing-only` builds and a generic option for
   consumers that must preserve per-file events instead of deduplicating them.

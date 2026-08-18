@@ -222,7 +222,7 @@ fn benchmark_environment(
         upstream_sha256: file_sha256(upstream)?,
         candidate_sha256: file_sha256(candidate)?,
         omarchy_rs_commit: command_text("git", &["rev-parse", "HEAD"], Some(workspace))?,
-        ccusage_commit: "03d8f07b867521cb74dd48af0379b3ffdc413c94".into(),
+        ccusage_commit: "97f5b4e71864408c4df5a9758639d253caf57dce".into(),
     })
 }
 

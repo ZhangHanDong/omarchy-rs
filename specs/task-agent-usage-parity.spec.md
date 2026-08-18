@@ -19,7 +19,7 @@ activation and rollback do not affect official Omarchy upgrades.
 ## Decisions
 
 - Treat the checked-out `../omarchy/bin/omarchy-agent-usage-*` scripts as the fixture compatibility baseline.
-- Parse Codex logs through ZhangHanDong/ccusage revision `03d8f07b867521cb74dd48af0379b3ffdc413c94` behind an internal backend.
+- Parse Codex logs through ZhangHanDong/ccusage revision `97f5b4e71864408c4df5a9758639d253caf57dce` behind an internal backend.
 - Start with Codex; add Claude and Fireworks only after the shared contract passes.
 - Keep the upstream JSON state schema and atomic file replacement semantics.
 - Resolve fallback through an absolute upstream executable path to prevent recursion.
@@ -33,6 +33,7 @@ activation and rollback do not affect official Omarchy upgrades.
 ## Boundaries
 
 ### Allowed Changes
+- Cargo.toml
 - crates/omarchy-cli/**
 - crates/omarchy-agents/**
 - crates/omarchy-compat/**
@@ -89,6 +90,18 @@ Scenario: Collector state file keeps schema and atomic replacement parity
   And readers observe either the complete old file or the complete new file
 
 ### Rule: overlay-safety — Activate and roll back safely
+
+Scenario: Shadow mode preserves upstream output while recording local parity
+  Test:
+    Package: omarchy-compat
+    Filter: shadow_mode_preserves_upstream_output
+    Level: integration
+    Test Double: isolated_path_and_fake_upstream
+    Targets: crates/omarchy-compat/src/shadow.rs, crates/omarchy-compat/src/bin/omarchy-agent-usage-codex-shadow.rs
+  Given isolated synthetic Codex sessions and a verified absolute fake upstream collector
+  When the shadow collector runs with the same arguments and environment
+  Then stdout and exit status come from upstream even if the Rust candidate fails or differs
+  And the parity receipt contains field names but no usage values, credentials, or prompt content
 
 Scenario: Compatible shim resolves to Rust and rolls back offline
   Test:

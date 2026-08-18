@@ -15,6 +15,8 @@ pub(crate) fn load_codex_events_from_directory(
         CodexDirectoryLoadOptions {
             single_thread: true,
             deduplicate: false,
+            filter_replayed_events: false,
+            filter_unchanged_cumulative_events: false,
         },
     )
     .map(|events| events.into_iter().map(map_event).collect())
