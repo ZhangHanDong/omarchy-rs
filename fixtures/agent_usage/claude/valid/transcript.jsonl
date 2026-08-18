@@ -1,0 +1,1 @@
+{"type":"assistant","timestamp":"2026-01-02T03:05:00Z","sessionId":"synthetic-claude-session","message":{"model":"claude-synthetic","usage":{"input_tokens":100,"cache_creation_input_tokens":10,"cache_read_input_tokens":20,"output_tokens":25}}}

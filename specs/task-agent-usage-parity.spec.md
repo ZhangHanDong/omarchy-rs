@@ -3,6 +3,7 @@ name: "Agent Usage Collector Parity Pilot"
 inherits: project
 tags: [rewrite, parity]
 satisfies: [REQ-001, REQ-002]
+depends: [task-agent-usage-dependency-evaluation]
 estimate: 3w
 ---
 
@@ -18,6 +19,7 @@ activation and rollback do not affect official Omarchy upgrades.
 ## Decisions
 
 - Treat the checked-out `../omarchy/bin/omarchy-agent-usage-*` scripts as the fixture compatibility baseline.
+- Parse Codex logs through ZhangHanDong/ccusage revision `9f6c0305743f29c99dbfa2ade54065e66632a2bb` behind an internal backend.
 - Start with Codex; add Claude and Fireworks only after the shared contract passes.
 - Keep the upstream JSON state schema and atomic file replacement semantics.
 - Resolve fallback through an absolute upstream executable path to prevent recursion.

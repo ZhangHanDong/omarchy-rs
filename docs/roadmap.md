@@ -4,6 +4,7 @@
 
 - Establish KLL requirements, architecture decisions, and project constraints.
 - Pin an Omarchy baseline and build isolated differential-test helpers.
+- Evaluate Agent Usage libraries through the dependency-admission Contract.
 - Build a reproducible benchmark harness before selecting numeric thresholds.
 
 ## Phase 1: Codex Agent Usage pilot

@@ -1,0 +1,115 @@
+{
+  "schema_version": 1,
+  "evaluated_at": "2026-08-18",
+  "omarchy_baseline": "f32ebbdb730c4e8fe11e4046cef4267e466264ea",
+  "candidates": [
+    {
+      "name": "tokenusage",
+      "version": "1.5.2",
+      "source": "crates.io; https://github.com/hanbu97/tokenusage",
+      "source_revision": "crate checksum 90a6f1aab7d987503a1dee03f43587d521b5f62bb090170efb0390ef3f7f2fb3; embedded git revision 3b9bf8f7c204da283db017b21199f39188426e4c",
+      "license": "MIT",
+      "maintenance": "Current crates.io release inspected on 2026-08-18; multi-provider project with active repository history.",
+      "msrv": "1.87 (higher than omarchy-rs declared 1.85)",
+      "default_features": ["cli"],
+      "proposed_features": [],
+      "transitive_dependencies": "Resolved with default-features=false in the evaluation workspace; reqwest remains unconditional. Exact graph is committed in Cargo.lock.",
+      "build_script": "none (Cargo.toml build=false)",
+      "unsafe_findings": "No unsafe blocks found by source scan in src/**/*.rs.",
+      "credential_access": "Compiled library contains Claude OAuth credential read/write functions for ~/.claude/.credentials.json.",
+      "network_access": "Compiled library unconditionally depends on reqwest and contains provider HTTP clients, including Anthropic OAuth usage.",
+      "telemetry": "No telemetry client found by source scan; provider requests are functional network access, not telemetry.",
+      "advisory_status": "No applicable unmitigated advisory in the locked evaluation graph after cargo audit; cargo deny result recorded in agent-usage.md.",
+      "behavior_coverage": [
+        "Parses local Codex and Claude JSONL token usage",
+        "Aggregates daily and model totals",
+        "Provides cache/incremental parsing machinery"
+      ],
+      "behavior_gaps": [
+        "Does not emit Omarchy's exact public state-file schema and diagnostics",
+        "Does not reproduce Codex app-server account/read and account/rateLimits/read behavior",
+        "Does not reproduce the full Omarchy Pi/OpenCode merge and cache semantics",
+        "Cannot compile a parser-only surface without network and credential code",
+        "MSRV exceeds the current project policy"
+      ],
+      "evidence": [
+        "tokenusage-1.5.2/Cargo.toml features and dependency declarations",
+        "tokenusage-1.5.2/src/pipeline/official.rs credential and HTTP implementations",
+        "pinned Omarchy bin/omarchy-agent-usage-codex and bin/omarchy-agent-usage-claude"
+      ],
+      "outcome": "adapt",
+      "rationale": "Promising parsing implementation, but admission requires an upstream or maintained fork that feature-gates all online and credential code, plus an Omarchy compatibility adapter and an MSRV decision."
+    },
+    {
+      "name": "ccusage-rust-adapters",
+      "version": "0.0.0 (fork workspace packages; publish=false)",
+      "source": "https://github.com/ZhangHanDong/ccusage",
+      "source_revision": "fork 9f6c0305743f29c99dbfa2ade54065e66632a2bb; upstream base 95d0528c61c6748463f0fbaf119b6c2521a42b32",
+      "license": "MIT",
+      "maintenance": "Revision dated 2026-08-17; active monorepo, but Rust adapter packages are explicitly unpublished internal APIs.",
+      "msrv": "not declared by the upstream Rust workspace",
+      "default_features": [],
+      "proposed_features": [],
+      "transitive_dependencies": "The selected Codex adapter and core are resolved from one exact Git revision in Cargo.lock; serde, jiff, memchr, core/common, CLI and terminal support are included.",
+      "build_script": "ccusage-core build.rs runs with models-dev-pricing-only and consumes only committed models.dev snapshots; adapters have no build script.",
+      "unsafe_findings": "No unsafe blocks found in rust/adapters/codex, rust/adapters/claude, or rust/adapters/common source scans.",
+      "credential_access": "none",
+      "network_access": "none",
+      "telemetry": "none",
+      "advisory_status": "Exact fork graph is resolved in Cargo.lock and passed cargo audit and cargo deny on 2026-08-19.",
+      "behavior_coverage": [
+        "Dedicated local Codex JSONL adapter",
+        "Dedicated local Claude transcript adapter",
+        "Provider adapters share a normalized usage model without credential or network access"
+      ],
+      "behavior_gaps": [
+        "Packages remain version 0.0.0, publish=false, and lack a stable external API",
+        "Does not emit Omarchy's exact state-file schema, diagnostics, account, and rate-limit fields",
+        "Full Pi/OpenCode merge and warm-cache parity remains unverified"
+      ],
+      "evidence": [
+        "ZhangHanDong/ccusage revision 9f6c0305743f29c99dbfa2ade54065e66632a2bb",
+        "upstream base 95d0528c61c6748463f0fbaf119b6c2521a42b32",
+        "ccusage rust/adapters/codex/Cargo.toml and source",
+        "ccusage rust/adapters/claude/Cargo.toml and source",
+        "pinned Omarchy agent usage collectors"
+      ],
+      "outcome": "adapt",
+      "rationale": "Selected as the offline parser basis through an exact fork revision and a narrow internal backend. Fork patches stay generic and replayable; Omarchy behavior remains guarded by parity tests outside the fork."
+    },
+    {
+      "name": "claude-usage",
+      "version": "0.2.3",
+      "source": "crates.io; https://github.com/PabloLION/agent-console-dashboard",
+      "source_revision": "crate checksum 244888fe4ce7334bfe8caca3e8840fc514fed8204e4bd55e38888ebb0a294653; embedded git revision 905089f378e2079b3f20dfb148450a595abd67a3",
+      "license": "MIT OR Apache-2.0",
+      "maintenance": "Current crates.io release inspected on 2026-08-18; narrow-purpose package in an active dashboard repository.",
+      "msrv": "1.77",
+      "default_features": ["blocking"],
+      "proposed_features": [],
+      "transitive_dependencies": "Resolved with default-features=false in the evaluation workspace; reqwest and platform credential dependencies remain part of the library surface. Exact graph is committed in Cargo.lock.",
+      "build_script": "build.rs invokes napi_build::setup only when the napi feature is enabled",
+      "unsafe_findings": "No unsafe blocks found by source scan in src/**/*.rs; optional N-API/native surface is unrelated and remains disabled.",
+      "credential_access": "Reads Claude OAuth credentials from Linux ~/.claude/.credentials.json or macOS Keychain; also accepts an OAuth token environment variable.",
+      "network_access": "Calls https://api.anthropic.com/api/oauth/usage through reqwest.",
+      "telemetry": "No telemetry client found; its only purpose is an explicit provider quota request.",
+      "advisory_status": "No applicable unmitigated advisory in the locked evaluation graph after cargo audit; cargo deny result recorded in agent-usage.md.",
+      "behavior_coverage": [
+        "Typed Claude OAuth quota response including utilization and reset timestamps"
+      ],
+      "behavior_gaps": [
+        "Does not parse local Claude transcripts",
+        "Does not produce Omarchy token totals, caches, diagnostics, or state-file schema",
+        "Requires credential access and a provider network call"
+      ],
+      "evidence": [
+        "claude-usage-0.2.3/Cargo.toml features and build script",
+        "claude-usage-0.2.3/src/credentials platform implementations",
+        "claude-usage-0.2.3/src/client.rs Anthropic endpoint",
+        "pinned Omarchy bin/omarchy-agent-usage-claude"
+      ],
+      "outcome": "isolate",
+      "rationale": "Useful only for a future explicit online Claude quota capability. It must not be linked into the default offline local-log collector."
+    }
+  ]
+}

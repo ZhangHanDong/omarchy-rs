@@ -1,0 +1,2 @@
+{"type":"assistant","timestamp":"2026-01-02T03:05:00Z","sessionId":"synthetic-duplicate","message":{"model":"claude-synthetic","usage":{"input_tokens":10,"output_tokens":2}}}
+{"type":"assistant","timestamp":"2026-01-02T03:05:00Z","sessionId":"synthetic-duplicate","message":{"model":"claude-synthetic","usage":{"input_tokens":10,"output_tokens":2}}}

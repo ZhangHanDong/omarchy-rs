@@ -1,0 +1,2 @@
+{"timestamp":"2026-01-02T03:04:05Z","type":"session_meta","payload":{"id":"synthetic-session","cwd":"/synthetic/project","cli_version":"0.0.0-test"}}
+{"timestamp":"2026-01-02T03:05:00Z","type":"event_msg","payload":{"type":"token_count","info":{"last_token_usage":{"input_tokens":120,"cached_input_tokens":20,"output_tokens":30,"reasoning_output_tokens":5,"total_tokens":150},"total_token_usage":{"input_tokens":120,"cached_input_tokens":20,"output_tokens":30,"reasoning_output_tokens":5,"total_tokens":150},"model_context_window":200000}}}

@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "source": "https://github.com/ZhangHanDong/ccusage",
+  "upstream": "https://github.com/ccusage/ccusage",
+  "branch": "omarchy-rs",
+  "upstream_revision": "95d0528c61c6748463f0fbaf119b6c2521a42b32",
+  "patch_revision": "9f6c0305743f29c99dbfa2ade54065e66632a2bb",
+  "dependency_revision": "9f6c0305743f29c99dbfa2ade54065e66632a2bb",
+  "features": ["models-dev-pricing-only"],
+  "offline_build": "passed with Cargo --offline, an empty CCUSAGE_PRICING_JSON_PATH environment, and a fresh target directory",
+  "default_missing_pricing": "fails closed with an explicit missing LiteLLM snapshot error and does not enable fetch-litellm-pricing",
+  "changed_paths": [
+    "docs/omarchy-rs-fork.md",
+    "rust/Cargo.toml",
+    "rust/adapters/codex/Cargo.toml",
+    "rust/adapters/common/Cargo.toml",
+    "rust/crates/ccusage-cli/Cargo.toml",
+    "rust/crates/ccusage-core/Cargo.toml",
+    "rust/crates/ccusage-core/README.md",
+    "rust/crates/ccusage-core/build.rs",
+    "rust/crates/ccusage-core/src/pricing.rs",
+    "rust/crates/ccusage-terminal/Cargo.toml"
+  ],
+  "patch_commits": [
+    "ef40aea6a204672f13c11933e4982a1974aad501",
+    "dd85f300627f268a640fbd8e8b293a55392e7c09",
+    "9f6c0305743f29c99dbfa2ade54065e66632a2bb"
+  ]
+}

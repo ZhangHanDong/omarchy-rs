@@ -1,7 +1,8 @@
 [workspace]
 resolver = "3"
-members = []
+members = ["crates/dependency-probe", "crates/omarchy-agents"]
 
 [workspace.package]
 edition = "2024"
 rust-version = "1.85"
+license = "MIT"

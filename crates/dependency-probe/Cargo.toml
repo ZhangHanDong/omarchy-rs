@@ -1,0 +1,27 @@
+[package]
+name = "dependency-probe"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish = false
+
+[dependencies]
+serde = { version = "1.0.228", features = ["derive"] }
+serde_json = "1.0.149"
+
+# Evaluation-only pins. Optional dependencies are resolved into Cargo.lock so
+# audit and license tools inspect them, but no candidate code is built or run.
+[dependencies.tokenusage]
+version = "=1.5.2"
+default-features = false
+optional = true
+
+[dependencies.claude-usage]
+version = "=0.2.3"
+default-features = false
+optional = true
+
+[features]
+candidate-tokenusage = ["dep:tokenusage"]
+candidate-claude-usage = ["dep:claude-usage"]

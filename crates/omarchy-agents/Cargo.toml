@@ -1,0 +1,11 @@
+[package]
+name = "omarchy-agents"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish = false
+
+[dependencies]
+ccusage-adapter-codex = { version = "=0.0.0", git = "https://github.com/ZhangHanDong/ccusage", rev = "9f6c0305743f29c99dbfa2ade54065e66632a2bb" }
+ccusage-core = { version = "=0.0.0", git = "https://github.com/ZhangHanDong/ccusage", rev = "9f6c0305743f29c99dbfa2ade54065e66632a2bb", features = ["models-dev-pricing-only"] }
