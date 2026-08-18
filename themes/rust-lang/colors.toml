@@ -1,0 +1,37 @@
+mode = "dark"
+
+# Rust orange is reserved for focus and action; warm neutrals carry the UI.
+accent = "#f74c00"
+selection = "#49342b"
+muted = "#73594d"
+
+background = "#171412"
+dark_background = "#100e0d"
+darker_background = "#0a0908"
+lighter_background = "#28211d"
+
+foreground = "#e8ded5"
+dark_foreground = "#8e7d73"
+light_foreground = "#d7c8be"
+bright_foreground = "#fff3e8"
+
+red = "#e05a47"
+yellow = "#d6a84b"
+orange = "#f74c00"
+green = "#8fb573"
+cyan = "#63c5da"
+blue = "#719cd6"
+magenta = "#c586c0"
+brown = "#a84820"
+
+bright_red = "#ff7665"
+bright_yellow = "#f0c674"
+bright_green = "#a8d080"
+bright_cyan = "#82d8e8"
+bright_blue = "#8db7f0"
+bright_magenta = "#dda0dd"
+
+hyprland_active_border = "rgba(f74c00ee) rgba(a84820ee)"
+hyprland_inactive_border = "rgba(49342baa)"
+active_border_color = "#f74c00"
+active_tab_background = "#49342b"

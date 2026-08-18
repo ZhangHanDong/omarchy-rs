@@ -19,6 +19,7 @@ replacements with measured operational benefit.
 ## Decisions
 
 - Rust workspace with one multicall CLI and domain crates added only as needed.
+- Project source, documentation, bundled theme, and original artwork use the MIT License.
 - Compatibility shims are selected explicitly; replacement is never all-or-nothing.
 - Read-only, frequently invoked commands precede mutating or privileged commands.
 - The installed upstream executable remains the fallback implementation.
@@ -27,11 +28,13 @@ replacements with measured operational benefit.
 
 ### Allowed Changes
 - Cargo.toml
+- LICENSE
 - rust-toolchain.toml
 - crates/**
 - tests/**
 - benches/**
 - packaging/**
+- themes/**
 - docs/**
 - knowledge/**
 - specs/**
