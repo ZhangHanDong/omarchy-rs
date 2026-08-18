@@ -31,13 +31,23 @@ for the verified upstream fingerprint with no Pi, OMP, or OpenCode source and
 no unsupported flag. Every unverified surface invokes the absolute Python
 collector and marks the record `collectorBackend=python`.
 
+Octoscode's canary scans its local `ui-protocol` ledger files in Rust and
+preserves the upstream collector's last-completed-event-per-turn aggregation.
+It is admitted only for the verified Python collector fingerprint. A changed
+upstream, an invalid Rust record, or an unsupported argument executes the
+original absolute Python collector instead. State writes use an atomic rename.
+
 ## Local test deployment
 
-This machine installs the updater and both provider shadow binaries under
+This machine installs the updater and provider shadow binaries under
 `~/.local/share/omarchy-rs/bin`. The user Hyprland configuration prepends that
 directory to the graphical-session `PATH`; no file under
 `/usr/share/omarchy` is modified. Activation is valid only when the Quickshell
 process resolves `omarchy-agent-usage-update` from this overlay directory.
+
+Octoscode is invoked by its user systemd service directly from that overlay
+directory with `OMARCHY_RS_OCTOSCODE_MODE=canary`; the original collector under
+`~/.local/bin` remains installed for fallback.
 
 ## Offline rollback
 
@@ -61,3 +71,10 @@ and the Rust app-server probe did not report a protocol failure. Every rejected
 condition executes the absolute Python collector. Claude is independently
 controlled by `OMARCHY_RS_CLAUDE_MODE=canary`; either provider can fall back
 without changing the other.
+
+Octoscode is independently controlled by
+`OMARCHY_RS_OCTOSCODE_MODE=canary`. On the local real-ledger benchmark (100
+warm invocations), Rust took 5.12 seconds versus Python's 18.06 seconds and
+used 2.0--2.2 MiB peak memory versus Python's 9.4--9.8 MiB. The streaming Rust
+collector therefore reduces measured CPU work by 71.6% and worst observed peak
+memory by 77.6% on the recorded 50.5 MB ledger workload.

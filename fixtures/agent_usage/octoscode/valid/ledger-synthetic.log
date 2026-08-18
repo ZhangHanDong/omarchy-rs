@@ -1,0 +1,3 @@
+{"event":{"turn_id":"turn-1","metadata":{"kind":"token_cost_update","token_cost":{"model":"k3"}}}}
+{"event":{"turn_id":"turn-1","kind":"turn_completed","session_id":"session-1","tokens_in":100,"tokens_out":25,"session_result":{"message_id":"msg:1767312000000000000"}}}
+{"event":{"turn_id":"turn-2","kind":"turn_completed","session_id":"session-1","tokens_in":20,"tokens_out":5,"session_result":{"message_id":"msg:1767312060000000000"}}}

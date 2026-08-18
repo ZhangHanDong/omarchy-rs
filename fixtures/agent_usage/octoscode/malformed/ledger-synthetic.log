@@ -1,0 +1,3 @@
+not json
+{"event":{"turn_id":"turn-1","kind":"turn_completed","session_id":"session-1","tokens_in":10,"tokens_out":2,"session_result":{"message_id":"msg:1767312000000000000"}}}
+{"event":{"turn_id":"turn-1","kind":"turn_completed","session_id":"session-1","tokens_in":30,"tokens_out":4,"session_result":{"message_id":"msg:1767312000000000000"}}}

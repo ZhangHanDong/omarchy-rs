@@ -53,6 +53,15 @@ pub fn claude_canary_eligible(
             .is_ok()
 }
 
+pub fn octoscode_canary_eligible(upstream_fingerprint_matches: bool, candidate: &Value) -> bool {
+    upstream_fingerprint_matches
+        && validate_provider_record(
+            &serde_json::to_vec(candidate).unwrap_or_default(),
+            "octoscode",
+        )
+        .is_ok()
+}
+
 pub fn validate_record(bytes: &[u8]) -> Result<Value, String> {
     validate_provider_record(bytes, "codex")
 }
@@ -176,5 +185,19 @@ mod tests {
             &serde_json::json!({})
         ));
         assert!(canary_eligible(true, false, false, &record(1)));
+    }
+
+    #[test]
+    fn octoscode_canary_selects_verified_rust() {
+        let octos_record = serde_json::json!({"schemaVersion":1,"id":"octoscode","name":"Octoscode","ready":true,"limits":[]});
+        assert!(octoscode_canary_eligible(true, &octos_record));
+        assert!(canary_eligible(true, false, false, &record(1)));
+    }
+
+    #[test]
+    fn octoscode_canary_falls_back() {
+        let valid = serde_json::json!({"schemaVersion":1,"id":"octoscode","name":"Octoscode","ready":true,"limits":[]});
+        assert!(!octoscode_canary_eligible(false, &valid));
+        assert!(!octoscode_canary_eligible(true, &serde_json::json!({})));
     }
 }
