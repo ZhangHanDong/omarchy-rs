@@ -27,7 +27,7 @@ replacements with measured operational benefit.
 ## Boundaries
 
 ### Allowed Changes
-- Cargo.toml
+- Cargo.*
 - LICENSE
 - rust-toolchain.toml
 - crates/**

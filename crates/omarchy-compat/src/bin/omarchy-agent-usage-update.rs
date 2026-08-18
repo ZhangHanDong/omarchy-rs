@@ -13,42 +13,36 @@ fn main() -> Result<ExitCode, String> {
         .map(PathBuf::from)
         .unwrap_or_else(|| PathBuf::from(DEFAULT_UPSTREAM_UPDATE));
     require_absolute_file(&upstream)?;
-    if !codex_is_wanted(&args)? {
+    let codex_wanted = agent_is_wanted(&args, "codex")?;
+    let claude_wanted = agent_is_wanted(&args, "claude")?;
+    if !codex_wanted && !claude_wanted {
         return command_status(&upstream, &args);
     }
 
     let mut upstream_args = args.clone();
-    upstream_args.extend(["--except".into(), "codex".into()]);
+    if codex_wanted {
+        upstream_args.extend(["--except".into(), "codex".into()]);
+    }
+    if claude_wanted {
+        upstream_args.extend(["--except".into(), "claude".into()]);
+    }
     let other_status = command_status(&upstream, &upstream_args)?;
-
-    let shadow = env::var_os("OMARCHY_RS_CODEX_SHADOW")
-        .map(PathBuf::from)
-        .unwrap_or(current_sibling("omarchy-agent-usage-codex-shadow")?);
-    require_absolute_file(&shadow)?;
-    let flags = args
-        .iter()
-        .filter(|arg| matches!(arg.as_str(), "--force" | "--limits-only"));
-    let output = Command::new(shadow)
-        .args(flags)
-        .output()
-        .map_err(|error| error.to_string())?;
-    if !output.stderr.is_empty() {
-        eprint!("{}", String::from_utf8_lossy(&output.stderr));
+    let mut collector_ok = true;
+    if codex_wanted {
+        collector_ok &= run_shadow(&args, "codex", "OMARCHY_RS_CODEX_SHADOW")?;
     }
-    if !output.status.success() {
-        return Ok(ExitCode::FAILURE);
+    if claude_wanted {
+        collector_ok &= run_shadow(&args, "claude", "OMARCHY_RS_CLAUDE_SHADOW")?;
     }
-    omarchy_compat::shadow::validate_record(&output.stdout)?;
-    write_codex_state(&output.stdout)?;
 
-    Ok(if other_status == ExitCode::SUCCESS {
+    Ok(if other_status == ExitCode::SUCCESS && collector_ok {
         ExitCode::SUCCESS
     } else {
         ExitCode::FAILURE
     })
 }
 
-fn codex_is_wanted(args: &[String]) -> Result<bool, String> {
+fn agent_is_wanted(args: &[String], agent: &str) -> Result<bool, String> {
     let mut only = Vec::new();
     let mut excluded = Vec::new();
     let mut index = 0;
@@ -68,7 +62,31 @@ fn codex_is_wanted(args: &[String]) -> Result<bool, String> {
         }
         index += 1;
     }
-    Ok(!excluded.contains(&"codex") && (only.is_empty() || only.contains(&"codex")))
+    Ok(!excluded.contains(&agent) && (only.is_empty() || only.contains(&agent)))
+}
+
+fn run_shadow(args: &[String], agent: &str, env_name: &str) -> Result<bool, String> {
+    let default_name = format!("omarchy-agent-usage-{agent}-shadow");
+    let shadow = env::var_os(env_name)
+        .map(PathBuf::from)
+        .unwrap_or(current_sibling(&default_name)?);
+    require_absolute_file(&shadow)?;
+    let output = Command::new(shadow)
+        .args(
+            args.iter()
+                .filter(|arg| matches!(arg.as_str(), "--force" | "--limits-only")),
+        )
+        .output()
+        .map_err(|error| error.to_string())?;
+    if !output.stderr.is_empty() {
+        eprint!("{}", String::from_utf8_lossy(&output.stderr));
+    }
+    if !output.status.success() {
+        return Ok(false);
+    }
+    omarchy_compat::shadow::validate_provider_record(&output.stdout, agent)?;
+    write_state(agent, &output.stdout)?;
+    Ok(true)
 }
 
 fn command_status(path: &Path, args: &[String]) -> Result<ExitCode, String> {
@@ -83,14 +101,14 @@ fn command_status(path: &Path, args: &[String]) -> Result<ExitCode, String> {
     })
 }
 
-fn write_codex_state(record: &[u8]) -> Result<(), String> {
+fn write_state(agent: &str, record: &[u8]) -> Result<(), String> {
     let state_home = env::var_os("XDG_STATE_HOME")
         .map(PathBuf::from)
         .or_else(|| env::var_os("HOME").map(|home| PathBuf::from(home).join(".local/state")))
         .ok_or("HOME and XDG_STATE_HOME are unset")?;
     let usage_dir = state_home.join("omarchy/agents/usage");
     fs::create_dir_all(&usage_dir).map_err(|error| error.to_string())?;
-    let temporary = usage_dir.join(format!(".codex.omarchy-rs.{}.tmp", std::process::id()));
+    let temporary = usage_dir.join(format!(".{agent}.omarchy-rs.{}.tmp", std::process::id()));
     let mut file = fs::OpenOptions::new()
         .write(true)
         .create_new(true)
@@ -102,7 +120,7 @@ fn write_codex_state(record: &[u8]) -> Result<(), String> {
             file.write_all(b"\n")?;
         }
         file.sync_all()?;
-        fs::rename(&temporary, usage_dir.join("codex.json"))
+        fs::rename(&temporary, usage_dir.join(format!("{agent}.json")))
     })();
     if result.is_err() {
         let _ = fs::remove_file(&temporary);
@@ -130,11 +148,11 @@ mod tests {
     use super::*;
 
     #[test]
-    fn codex_selection_matches_upstream_flags() {
-        assert!(codex_is_wanted(&[]).unwrap());
-        assert!(codex_is_wanted(&["codex".into()]).unwrap());
-        assert!(!codex_is_wanted(&["claude".into()]).unwrap());
-        assert!(!codex_is_wanted(&["--except".into(), "codex".into()]).unwrap());
-        assert!(codex_is_wanted(&["--force".into()]).unwrap());
+    fn provider_selection_matches_upstream_flags() {
+        assert!(agent_is_wanted(&[], "codex").unwrap());
+        assert!(agent_is_wanted(&["codex".into()], "codex").unwrap());
+        assert!(!agent_is_wanted(&["claude".into()], "codex").unwrap());
+        assert!(!agent_is_wanted(&["--except".into(), "codex".into()], "codex").unwrap());
+        assert!(agent_is_wanted(&["--force".into()], "claude").unwrap());
     }
 }

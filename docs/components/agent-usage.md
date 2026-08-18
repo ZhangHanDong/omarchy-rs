@@ -1,6 +1,6 @@
-# Agent Usage shadow overlay
+# Agent Usage canary overlay
 
-The first live deployment mode is deliberately non-authoritative. The
+The first Codex deployment mode is deliberately non-authoritative. The
 `omarchy-agent-usage-codex-shadow` executable runs the installed absolute
 Python collector, independently computes the Rust record, and compares the
 documented local and app-server RPC fields. It always returns the upstream
@@ -19,14 +19,21 @@ omarchy-rs-shadow {"differingFields":[],"localFieldsMatch":true,"schemaVersion":
 ```
 
 It contains no token values, dates, model names, prompt content, or
-credentials. The updater adapter delegates all non-Codex agents to the
-absolute installed updater, invokes the shadow collector for Codex, validates
-the upstream record, and atomically replaces only the user-owned Codex state
-file.
+credentials. The updater adapter delegates unreplaced agents to the absolute
+installed updater, invokes provider-specific canaries for Codex and Claude,
+validates each record, and atomically replaces only the corresponding
+user-owned state file.
+
+Claude's canary scans native Claude Code transcripts in Rust, reads the
+aggregate cache/history fallback, and probes the fixed Anthropic OAuth usage
+endpoint without logging or persisting the access token. It returns Rust only
+for the verified upstream fingerprint with no Pi, OMP, or OpenCode source and
+no unsupported flag. Every unverified surface invokes the absolute Python
+collector and marks the record `collectorBackend=python`.
 
 ## Local test deployment
 
-This machine installs the two release binaries under
+This machine installs the updater and both provider shadow binaries under
 `~/.local/share/omarchy-rs/bin`. The user Hyprland configuration prepends that
 directory to the graphical-session `PATH`; no file under
 `/usr/share/omarchy` is modified. Activation is valid only when the Quickshell
@@ -51,4 +58,6 @@ The optional `OMARCHY_RS_CODEX_MODE=canary` path is narrower than general
 activation. It returns Rust only for the exact verified upstream fingerprint,
 when Pi/OMP and OpenCode sources are absent, `--limits-only` was not requested,
 and the Rust app-server probe did not report a protocol failure. Every rejected
-condition executes the absolute Python collector. Shadow remains the default.
+condition executes the absolute Python collector. Claude is independently
+controlled by `OMARCHY_RS_CLAUDE_MODE=canary`; either provider can fall back
+without changing the other.

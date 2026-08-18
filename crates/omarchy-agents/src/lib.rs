@@ -1,5 +1,6 @@
 pub mod benchmark;
 mod ccusage_backend;
+pub mod claude;
 pub mod codex;
 pub mod rpc;
 

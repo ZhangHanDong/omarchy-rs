@@ -7,10 +7,12 @@ license.workspace = true
 publish = false
 
 [dependencies]
-ccusage-adapter-codex = { version = "=0.0.0", git = "https://github.com/ZhangHanDong/ccusage", rev = "97f5b4e71864408c4df5a9758639d253caf57dce" }
-ccusage-core = { version = "=0.0.0", git = "https://github.com/ZhangHanDong/ccusage", rev = "97f5b4e71864408c4df5a9758639d253caf57dce", features = ["models-dev-pricing-only"] }
+ccusage-adapter-claude = { version = "=0.0.0", git = "https://github.com/ZhangHanDong/ccusage", rev = "302fa5eaf61f7d09a8a2710be0c8fafbc2723e4c" }
+ccusage-adapter-codex = { version = "=0.0.0", git = "https://github.com/ZhangHanDong/ccusage", rev = "302fa5eaf61f7d09a8a2710be0c8fafbc2723e4c" }
+ccusage-core = { version = "=0.0.0", git = "https://github.com/ZhangHanDong/ccusage", rev = "302fa5eaf61f7d09a8a2710be0c8fafbc2723e4c", features = ["models-dev-pricing-only"] }
 chrono = { version = "0.4.42", default-features = false, features = ["clock", "std"] }
 serde = { version = "1.0.228", features = ["derive"] }
 serde_json = "1.0.149"
 sha2 = "0.10.9"
 tempfile = "3.27.0"
+ureq = { version = "2.12.1", default-features = false, features = ["json", "tls"] }

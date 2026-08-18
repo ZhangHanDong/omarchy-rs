@@ -44,7 +44,7 @@
       "name": "ccusage-rust-adapters",
       "version": "0.0.0 (fork workspace packages; publish=false)",
       "source": "https://github.com/ZhangHanDong/ccusage",
-      "source_revision": "fork 97f5b4e71864408c4df5a9758639d253caf57dce; upstream base 95d0528c61c6748463f0fbaf119b6c2521a42b32",
+      "source_revision": "fork 302fa5eaf61f7d09a8a2710be0c8fafbc2723e4c; upstream base 95d0528c61c6748463f0fbaf119b6c2521a42b32",
       "license": "MIT",
       "maintenance": "Revision dated 2026-08-17; active monorepo, but Rust adapter packages are explicitly unpublished internal APIs.",
       "msrv": "not declared by the upstream Rust workspace",
@@ -68,7 +68,7 @@
         "Full Pi/OpenCode merge and warm-cache parity remains unverified"
       ],
       "evidence": [
-        "ZhangHanDong/ccusage revision 97f5b4e71864408c4df5a9758639d253caf57dce",
+        "ZhangHanDong/ccusage revision 302fa5eaf61f7d09a8a2710be0c8fafbc2723e4c",
         "upstream base 95d0528c61c6748463f0fbaf119b6c2521a42b32",
         "ccusage rust/adapters/codex/Cargo.toml and source",
         "ccusage rust/adapters/claude/Cargo.toml and source",

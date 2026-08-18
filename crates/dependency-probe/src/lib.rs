@@ -234,6 +234,7 @@ mod tests {
                 || path == "rust/adapters/codex/src/loader.rs"
                 || path == "rust/adapters/codex/src/parser.rs"
                 || path == "rust/adapters/codex/src/replay.rs"
+                || path == "rust/adapters/claude/src/lib.rs"
                 || (path.starts_with("rust/") && path.ends_with("Cargo.toml"))
         }));
 

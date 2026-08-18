@@ -40,7 +40,24 @@ pub fn canary_eligible(
             != Some("Codex limits unavailable")
 }
 
+pub fn claude_canary_eligible(
+    upstream_fingerprint_matches: bool,
+    has_external_sources: bool,
+    limits_only: bool,
+    candidate: &Value,
+) -> bool {
+    upstream_fingerprint_matches
+        && !has_external_sources
+        && !limits_only
+        && validate_provider_record(&serde_json::to_vec(candidate).unwrap_or_default(), "claude")
+            .is_ok()
+}
+
 pub fn validate_record(bytes: &[u8]) -> Result<Value, String> {
+    validate_provider_record(bytes, "codex")
+}
+
+pub fn validate_provider_record(bytes: &[u8], provider: &str) -> Result<Value, String> {
     let value: Value = serde_json::from_slice(bytes).map_err(|error| error.to_string())?;
     let object = value
         .as_object()
@@ -50,7 +67,7 @@ pub fn validate_record(bytes: &[u8]) -> Result<Value, String> {
             return Err(format!("collector record is missing {field}"));
         }
     }
-    if value["schemaVersion"] != 1 || value["id"] != "codex" {
+    if value["schemaVersion"] != 1 || value["id"] != provider {
         return Err("collector record identity is incompatible".into());
     }
     Ok(value)
@@ -132,5 +149,32 @@ mod tests {
         let mut failed_rpc = valid;
         failed_rpc["usageStatusText"] = "Codex limits unavailable".into();
         assert!(!canary_eligible(true, false, false, &failed_rpc));
+    }
+
+    #[test]
+    fn claude_canary_selects_verified_rust() {
+        let record = serde_json::json!({
+            "schemaVersion": 1, "id": "claude", "name": "Claude Code",
+            "ready": true, "limits": [], "collectorBackend": "rust"
+        });
+        assert!(claude_canary_eligible(true, false, false, &record));
+    }
+
+    #[test]
+    fn claude_canary_falls_back_for_unverified_surfaces() {
+        let valid = serde_json::json!({
+            "schemaVersion": 1, "id": "claude", "name": "Claude Code",
+            "ready": true, "limits": []
+        });
+        assert!(!claude_canary_eligible(false, false, false, &valid));
+        assert!(!claude_canary_eligible(true, true, false, &valid));
+        assert!(!claude_canary_eligible(true, false, true, &valid));
+        assert!(!claude_canary_eligible(
+            true,
+            false,
+            false,
+            &serde_json::json!({})
+        ));
+        assert!(canary_eligible(true, false, false, &record(1)));
     }
 }
