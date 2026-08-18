@@ -25,7 +25,10 @@ mod unix {
             .unwrap();
 
         assert!(output.status.success());
-        assert_eq!(String::from_utf8(output.stdout).unwrap().trim(), record);
+        let output_record: serde_json::Value = serde_json::from_slice(&output.stdout).unwrap();
+        let mut expected: serde_json::Value = serde_json::from_str(record).unwrap();
+        expected["collectorBackend"] = "python".into();
+        assert_eq!(output_record, expected);
         let stderr = String::from_utf8(output.stderr).unwrap();
         assert!(stderr.contains("omarchy-rs-shadow"));
         assert!(stderr.contains("todayPrompts"));

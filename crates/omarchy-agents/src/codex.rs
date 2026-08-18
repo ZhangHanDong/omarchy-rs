@@ -79,6 +79,7 @@ pub fn collect_local_record(sessions_dir: &Path) -> Result<Value, String> {
 
     Ok(json!({
         "schemaVersion": 1, "id": "codex", "name": "Codex",
+        "collectorBackend": "rust",
         "updatedAt": Utc::now().to_rfc3339(), "ready": true, "hasLocalStats": true,
         "todayPrompts": today_prompts, "todaySessions": today_sessions.len(),
         "todayTotalTokens": today_total_tokens, "todayTokensByModel": today_tokens_by_model,

@@ -7,6 +7,11 @@ documented local and app-server RPC fields. It always returns the upstream
 stdout and exit status. Candidate failures and differences therefore cannot
 change the panel record.
 
+The overlay adds one presentation field after validation:
+`collectorBackend` is `rust` for an admitted canary record and `python` for an
+upstream fallback. Providers written directly by Omarchy have no such field
+and the optional user UI treats that absence as `python`.
+
 The shadow receipt contains only compatibility field names:
 
 ```text

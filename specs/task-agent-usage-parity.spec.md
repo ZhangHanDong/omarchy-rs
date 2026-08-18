@@ -112,7 +112,7 @@ Scenario: Shadow mode preserves upstream output while recording local parity
     Targets: crates/omarchy-compat/src/shadow.rs, crates/omarchy-compat/src/bin/omarchy-agent-usage-codex-shadow.rs
   Given isolated synthetic Codex sessions and a verified absolute fake upstream collector
   When the shadow collector runs with the same arguments and environment
-  Then stdout and exit status come from upstream even if the Rust candidate fails or differs
+  Then stdout contains the validated upstream record plus `collectorBackend=python` and preserves its exit status even if the Rust candidate fails or differs
   And the parity receipt contains field names but no usage values, credentials, or prompt content
 
 Scenario: Canary mode fails open on every unverified compatibility surface

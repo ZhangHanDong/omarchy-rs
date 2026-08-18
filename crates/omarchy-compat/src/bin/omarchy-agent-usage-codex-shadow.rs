@@ -31,7 +31,6 @@ fn main() -> Result<(), String> {
             record,
         )
     {
-        eprintln!("omarchy-rs-canary selected=rust");
         println!(
             "{}",
             serde_json::to_string(record).map_err(|error| error.to_string())?
@@ -47,7 +46,11 @@ fn main() -> Result<(), String> {
         eprint!("{}", String::from_utf8_lossy(&output.stderr));
         std::process::exit(output.status.code().unwrap_or(1));
     }
-    let upstream_record = validate_record(&output.stdout)?;
+    let mut upstream_record = validate_record(&output.stdout)?;
+    upstream_record
+        .as_object_mut()
+        .ok_or("upstream record is not an object")?
+        .insert("collectorBackend".into(), "python".into());
 
     match candidate {
         Ok(candidate) => {
@@ -58,7 +61,10 @@ fn main() -> Result<(), String> {
     }
 
     eprint!("{}", String::from_utf8_lossy(&output.stderr));
-    print!("{}", String::from_utf8_lossy(&output.stdout));
+    println!(
+        "{}",
+        serde_json::to_string(&upstream_record).map_err(|error| error.to_string())?
+    );
     Ok(())
 }
 
