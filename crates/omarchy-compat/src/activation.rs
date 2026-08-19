@@ -2,7 +2,7 @@ use std::{env, fs, path::PathBuf};
 
 use serde::{Deserialize, Serialize};
 
-pub const PROVIDERS: [&str; 3] = ["codex", "claude", "octoscode"];
+pub const PROVIDERS: [&str; 4] = ["codex", "claude", "octoscode", "grok"];
 pub const CODEX_UPSTREAM_SHA256: &str =
     "0d36d856439f17749dc8a25c56607e8462de72fde91f384abc370fbc78113b14";
 pub const CLAUDE_UPSTREAM_SHA256: &str =

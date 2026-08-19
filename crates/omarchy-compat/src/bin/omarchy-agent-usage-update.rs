@@ -26,7 +26,11 @@ fn main() -> Result<ExitCode, String> {
         && activation
             .as_ref()
             .is_some_and(|config| config.enables("octoscode"));
-    if !codex_wanted && !claude_wanted && !octoscode_wanted {
+    let grok_wanted = agent_is_wanted(&args, "grok")?
+        && activation
+            .as_ref()
+            .is_some_and(|config| config.enables("grok"));
+    if !codex_wanted && !claude_wanted && !octoscode_wanted && !grok_wanted {
         return command_status(&upstream, &args);
     }
 
@@ -39,6 +43,9 @@ fn main() -> Result<ExitCode, String> {
     }
     if octoscode_wanted {
         upstream_args.extend(["--except".into(), "octoscode".into()]);
+    }
+    if grok_wanted {
+        upstream_args.extend(["--except".into(), "grok".into()]);
     }
     let other_status = command_status(&upstream, &upstream_args)?;
     let mut collector_ok = true;
@@ -65,6 +72,9 @@ fn main() -> Result<ExitCode, String> {
             "OMARCHY_RS_OCTOSCODE_SHADOW",
             "OMARCHY_RS_OCTOSCODE_MODE",
         )?;
+    }
+    if grok_wanted {
+        collector_ok &= run_native(&args, "grok", "OMARCHY_RS_GROK_COLLECTOR")?;
     }
 
     Ok(if other_status == ExitCode::SUCCESS && collector_ok {
@@ -110,6 +120,30 @@ fn run_shadow(
     require_absolute_file(&shadow)?;
     let output = Command::new(shadow)
         .env(mode_env, "canary")
+        .args(
+            args.iter()
+                .filter(|arg| matches!(arg.as_str(), "--force" | "--limits-only")),
+        )
+        .output()
+        .map_err(|error| error.to_string())?;
+    if !output.stderr.is_empty() {
+        eprint!("{}", String::from_utf8_lossy(&output.stderr));
+    }
+    if !output.status.success() {
+        return Ok(false);
+    }
+    omarchy_compat::shadow::validate_provider_record(&output.stdout, agent)?;
+    write_state(agent, &output.stdout)?;
+    Ok(true)
+}
+
+fn run_native(args: &[String], agent: &str, env_name: &str) -> Result<bool, String> {
+    let default_name = format!("omarchy-agent-usage-{agent}");
+    let collector = env::var_os(env_name)
+        .map(PathBuf::from)
+        .unwrap_or(current_sibling(&default_name)?);
+    require_absolute_file(&collector)?;
+    let output = Command::new(collector)
         .args(
             args.iter()
                 .filter(|arg| matches!(arg.as_str(), "--force" | "--limits-only")),
@@ -192,5 +226,13 @@ mod tests {
         assert!(!agent_is_wanted(&["claude".into()], "codex").unwrap());
         assert!(!agent_is_wanted(&["--except".into(), "codex".into()], "codex").unwrap());
         assert!(agent_is_wanted(&["--force".into()], "claude").unwrap());
+    }
+
+    #[test]
+    fn provider_selection_includes_grok() {
+        assert!(agent_is_wanted(&[], "grok").unwrap());
+        assert!(agent_is_wanted(&["grok".into()], "grok").unwrap());
+        assert!(!agent_is_wanted(&["codex".into()], "grok").unwrap());
+        assert!(!agent_is_wanted(&["--except".into(), "grok".into()], "grok").unwrap());
     }
 }

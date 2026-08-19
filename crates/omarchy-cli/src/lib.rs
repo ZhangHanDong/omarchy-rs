@@ -14,12 +14,13 @@ use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
 
-const EXECUTABLES: [&str; 5] = [
+const EXECUTABLES: [&str; 6] = [
     "omarchy-rs",
     "omarchy-agent-usage-update",
     "omarchy-agent-usage-codex-shadow",
     "omarchy-agent-usage-claude-shadow",
     "omarchy-agent-usage-octoscode-shadow",
+    "omarchy-agent-usage-grok",
 ];
 const UPDATER: &str = "omarchy-agent-usage-update";
 
@@ -273,21 +274,39 @@ fn provider_status(layout: &Layout, activation: Option<&ActivationConfig>) -> Ve
             layout.expected_fingerprints[2].as_str(),
         ),
     ];
-    specs.into_iter().map(|(name, upstream, expected)| {
-        let current = fingerprint(&upstream).ok();
-        let backend = fs::read(layout.state_root.join(format!("omarchy/agents/usage/{name}.json")))
-            .ok()
-            .and_then(|bytes| serde_json::from_slice::<Value>(&bytes).ok())
-            .and_then(|record| record["collectorBackend"].as_str().map(str::to_owned))
-            .unwrap_or_else(|| "unknown".into());
-        json!({
-            "id": name,
-            "enabled": activation.is_some_and(|config| config.enables(name)),
-            "backend": backend,
-            "upstream": upstream,
-            "compatibility": if current.as_deref() == Some(expected) { "verified" } else { "unverified" },
+    let mut providers = specs
+        .into_iter()
+        .map(|(name, upstream, expected)| {
+            let current = fingerprint(&upstream).ok();
+            json!({
+                "id": name,
+                "enabled": activation.is_some_and(|config| config.enables(name)),
+                "backend": state_backend(layout, name),
+                "upstream": upstream,
+                "compatibility": if current.as_deref() == Some(expected) { "verified" } else { "unverified" },
+            })
         })
-    }).collect()
+        .collect::<Vec<_>>();
+    providers.push(json!({
+        "id": "grok",
+        "enabled": activation.is_some_and(|config| config.enables("grok")),
+        "backend": state_backend(layout, "grok"),
+        "upstream": Value::Null,
+        "compatibility": "native",
+    }));
+    providers
+}
+
+fn state_backend(layout: &Layout, name: &str) -> String {
+    fs::read(
+        layout
+            .state_root
+            .join(format!("omarchy/agents/usage/{name}.json")),
+    )
+    .ok()
+    .and_then(|bytes| serde_json::from_slice::<Value>(&bytes).ok())
+    .and_then(|record| record["collectorBackend"].as_str().map(str::to_owned))
+    .unwrap_or_else(|| "unknown".into())
 }
 
 fn render_status(report: &Value) -> String {
@@ -523,6 +542,23 @@ mod tests {
                 .into_iter()
                 .all(|provider| config.enables(provider))
         );
+    }
+
+    #[test]
+    fn activate_agent_usage_enables_grok() {
+        let fixture = Fixture::new();
+        fixture.activate();
+        let config: ActivationConfig =
+            serde_json::from_slice(&fs::read(fixture.layout.activation()).unwrap()).unwrap();
+        assert!(config.enables("grok"));
+        let report = status(&fixture.layout, &fixture.path);
+        let grok = report["providers"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|provider| provider["id"] == "grok")
+            .unwrap();
+        assert_eq!(grok["compatibility"], "native");
     }
 
     #[test]

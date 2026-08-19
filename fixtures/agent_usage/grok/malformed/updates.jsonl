@@ -1,0 +1,4 @@
+not-json
+{"timestamp":1787155200,"method":"_x.ai/session/update","params":{"sessionId":"ignored","_meta":{"eventId":"ignored"},"update":{"sessionUpdate":"tool_call","usage":{"inputTokens":999,"outputTokens":999}}}}
+{"timestamp":1787155200,"method":"_x.ai/session/update","params":{"sessionId":"session-c","_meta":{"eventId":"duplicate"},"update":{"sessionUpdate":"turn_completed","usage":{"inputTokens":10,"outputTokens":2}}}}
+{"timestamp":1787155201,"method":"_x.ai/session/update","params":{"sessionId":"session-c","_meta":{"eventId":"duplicate"},"update":{"sessionUpdate":"turn_completed","usage":{"inputTokens":30,"outputTokens":4}}}}

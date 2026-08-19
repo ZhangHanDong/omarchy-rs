@@ -22,6 +22,7 @@ The default layout is:
 └── libexec/
     ├── omarchy-rs
     ├── omarchy-agent-usage-update
+    ├── omarchy-agent-usage-grok
     └── omarchy-agent-usage-*-shadow
 
 ~/.config/omarchy-rs/
@@ -38,11 +39,13 @@ omarchy-rs activate agent-usage
 omarchy-rs status --json
 ```
 
-The activation record enables Codex, Claude Code, and Octoscode independently.
-The updater supplies each Rust shadow's canary environment itself, so activation
-does not depend on shell-specific exported mode variables. Each shadow still
-checks the pinned Python collector fingerprint and falls back to Python after
-upstream drift or candidate rejection.
+The activation record enables Codex, Claude Code, Octoscode, and Grok
+independently. The updater supplies each Rust shadow's canary environment
+itself, so activation does not depend on shell-specific exported mode
+variables. The first three shadows still check the pinned Python collector
+fingerprint and fall back to Python after upstream drift or candidate
+rejection. Grok is a native-only addition backed by local structured completion
+metadata and has no stock Python collector to fall back to.
 
 Rollback is offline and retains installed release files for later activation:
 

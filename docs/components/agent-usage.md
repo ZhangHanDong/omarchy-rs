@@ -37,6 +37,13 @@ It is admitted only for the verified Python collector fingerprint. A changed
 upstream, an invalid Rust record, or an unsupported argument executes the
 original absolute Python collector instead. State writes use an atomic rename.
 
+Grok has no stock Omarchy collector to shadow. Its native Rust collector scans
+only `$GROK_HOME/sessions/**/updates.jsonl` (or `~/.grok`) and accepts structured
+`turn_completed` usage records. It never reads prompt history, chat history,
+responses, credentials, or telemetry. Grok has no Python fallback because this
+is a new provider integration rather than a replacement; malformed and unknown
+records are skipped and no rate limit or subscription data is invented.
+
 ## User overlay deployment
 
 `omarchy-rs install` installs the updater and provider shadows under
@@ -45,9 +52,9 @@ updater shim under the adjacent `bin` directory. The CLI refuses activation
 unless that directory precedes `/usr/share/omarchy/bin` in PATH. No file under
 `/usr/share/omarchy` is modified.
 
-The activation record enables Codex, Claude Code, and Octoscode. The updater
-passes their canary modes to sibling shadows; original collectors remain
-installed for fallback.
+The activation record enables Codex, Claude Code, Octoscode, and Grok. The
+updater passes canary modes to the first three provider shadows; their original
+collectors remain installed for fallback. Grok is routed to the native sibling.
 
 ## Offline rollback
 
