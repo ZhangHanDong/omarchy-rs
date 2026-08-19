@@ -23,6 +23,7 @@ pub(crate) const EXECUTABLES: [&str; 6] = [
     "omarchy-agent-usage-grok",
 ];
 const UPDATER: &str = "omarchy-agent-usage-update";
+pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 #[derive(Clone, Debug)]
 pub struct Layout {
@@ -95,6 +96,7 @@ impl Layout {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum Command {
+    Version,
     Doctor { json: bool },
     Install,
     ActivateAgentUsage,
@@ -105,6 +107,7 @@ pub enum Command {
 impl Command {
     pub fn parse(args: &[String]) -> Result<Self, String> {
         match args {
+            [flag] if flag == "--version" || flag == "-V" => Ok(Self::Version),
             [command] if command == "install" => Ok(Self::Install),
             [command] if command == "doctor" => Ok(Self::Doctor { json: false }),
             [command, flag] if command == "doctor" && flag == "--json" => {
@@ -120,7 +123,7 @@ impl Command {
             [command, component] if command == "rollback" && component == "agent-usage" => {
                 Ok(Self::RollbackAgentUsage)
             }
-            _ => Err("usage: omarchy-rs <doctor [--json]|install|activate agent-usage|status [--json]|rollback agent-usage>".into()),
+            _ => Err("usage: omarchy-rs <--version|-V|doctor [--json]|install|activate agent-usage|status [--json]|rollback agent-usage>".into()),
         }
     }
 }
@@ -147,6 +150,7 @@ pub fn execute(
     path: &OsStr,
 ) -> Result<String, String> {
     match command {
+        Command::Version => Ok(format!("omarchy-rs {VERSION}")),
         Command::Install => install(layout, release_dir),
         Command::ActivateAgentUsage => activate(layout, path),
         Command::RollbackAgentUsage => rollback(layout),
@@ -497,6 +501,19 @@ mod tests {
         fn activate(&self) {
             self.install();
             activate(&self.layout, &self.path).unwrap();
+        }
+    }
+
+    #[test]
+    fn version_flags_report_package_version() {
+        let fixture = Fixture::new();
+        for flag in ["--version", "-V"] {
+            let command = Command::parse(&[flag.into()]).unwrap();
+            assert_eq!(command, Command::Version);
+            assert_eq!(
+                execute(command, &fixture.layout, &fixture.release, &fixture.path).unwrap(),
+                format!("omarchy-rs {}", env!("CARGO_PKG_VERSION"))
+            );
         }
     }
 

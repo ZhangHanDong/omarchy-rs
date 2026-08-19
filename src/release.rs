@@ -16,7 +16,7 @@ mod tests {
     #[test]
     fn release_manifest_has_single_public_package() {
         assert!(MANIFEST.contains("name = \"omarchy-rs\""));
-        assert!(MANIFEST.contains("version = \"0.1.0\""));
+        assert!(MANIFEST.contains("version = \"0.1.1\""));
         let root = Path::new(env!("CARGO_MANIFEST_DIR"));
         for old in [
             "crates/omarchy-agents/Cargo.toml",

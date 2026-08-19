@@ -18,6 +18,9 @@ fn main() -> ExitCode {
 fn run() -> Result<String, String> {
     let args = env::args().skip(1).collect::<Vec<_>>();
     let command = Command::parse(&args)?;
+    if command == Command::Version {
+        return Ok(format!("omarchy-rs {}", env!("CARGO_PKG_VERSION")));
+    }
     let layout = Layout::from_environment()?;
     let path = env::var_os("PATH").unwrap_or_default();
     let source = env::var_os("OMARCHY_RS_RELEASE_DIR")
