@@ -39,6 +39,13 @@ omarchy-rs activate agent-usage
 omarchy-rs status --json
 ```
 
+After activation, Omarchy's panel continues to run the familiar
+`omarchy-agent-usage-update` command, but `PATH` resolves that name to the
+user-owned Rust updater. The updater writes the same JSON contract and state
+paths that the panel already consumes, so the UI does not need a Rust-specific
+data path. Each record's `collectorBackend` field reports whether that refresh
+used Rust or the Python fallback.
+
 The activation record enables Codex, Claude Code, Octoscode, and Grok
 independently. The updater supplies each Rust shadow's canary environment
 itself, so activation does not depend on shell-specific exported mode

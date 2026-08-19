@@ -32,11 +32,19 @@ omarchy-rs doctor
 omarchy-rs install
 omarchy-rs activate agent-usage
 omarchy-rs status
+omarchy-rs --version
 ```
 
 The overlay lives under `~/.local/share/omarchy-rs` and does not modify files
 owned by the Omarchy package. Use `omarchy-rs rollback agent-usage` for an
 offline rollback to the official commands.
+
+The CLI manages the overlay; provider-specific Rust binaries perform the
+collection. They preserve Omarchy's existing state-file contract, and the
+panel reads `collectorBackend` to show whether the latest result came from
+Rust or the Python fallback. See [Agent Usage](docs/components/agent-usage.md)
+and [deployment](docs/deployment.md) for the complete data flow and rollback
+rules.
 
 ## Rust Lang Omarchy theme
 

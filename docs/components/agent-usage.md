@@ -1,11 +1,34 @@
-# Agent Usage canary overlay
+# Agent Usage Rust overlay
 
-The first Codex deployment mode is deliberately non-authoritative. The
-`omarchy-agent-usage-codex-shadow` executable runs the installed absolute
-Python collector, independently computes the Rust record, and compares the
-documented local and app-server RPC fields. It always returns the upstream
-stdout and exit status. Candidate failures and differences therefore cannot
-change the panel record.
+The Agent Usage replacement is managed by the `omarchy-rs` CLI but executed by
+separate Rust updater and collector binaries. Activation changes command
+resolution only: it places the user-owned updater before Omarchy's updater in
+`PATH`. It does not replace files in the Omarchy package.
+
+```text
+Omarchy Usage panel
+        |
+        v
+omarchy-agent-usage-update (user PATH shim)
+        |
+        +-- Codex / Claude / Octoscode shadow
+        |       |
+        |       +-- eligible and valid ----------> Rust record
+        |       `-- drifted or unsupported ------> absolute Python collector
+        |
+        `-- Grok native collector ---------------> Rust record
+                        |
+                        v
+        ~/.local/state/omarchy/agents/usage/*.json
+```
+
+For Codex, Claude Code, and Octoscode, a shadow admits the Rust result only
+when the installed upstream collector has the verified fingerprint and the
+requested surface is supported. The Rust record must also pass schema and
+provider validation. An upstream change, unsupported arguments or sources, or
+an invalid candidate invokes the original collector by absolute path instead.
+This decision is provider-local, so one provider can fall back without
+changing the others.
 
 The overlay adds one presentation field after validation:
 `collectorBackend` is `rust` for an admitted canary record and `python` for an
@@ -19,10 +42,9 @@ omarchy-rs-shadow {"differingFields":[],"localFieldsMatch":true,"schemaVersion":
 ```
 
 It contains no token values, dates, model names, prompt content, or
-credentials. The updater adapter delegates unreplaced agents to the absolute
-installed updater, invokes provider-specific canaries for Codex and Claude,
-validates each record, and atomically replaces only the corresponding
-user-owned state file.
+credentials. The updater delegates unreplaced agents to the absolute installed
+updater, invokes the enabled Rust provider binaries, validates their records,
+and atomically replaces only the corresponding user-owned state files.
 
 Claude's canary scans native Claude Code transcripts in Rust, reads the
 aggregate cache/history fallback, and probes the fixed Anthropic OAuth usage
@@ -64,13 +86,8 @@ updater and command resolution falls through to the official updater. Rollback
 needs no network access and does not reconstruct or edit an Omarchy package
 file.
 
-Shadow success is evidence for local-stat parity, not permission to return the
-Rust record. Direct replacement remains blocked until app-server limits,
-Pi/OMP, OpenCode, cache behavior, activation eligibility, and rollback tests
-all pass the task Contract.
-
-The optional `OMARCHY_RS_CODEX_MODE=canary` path is narrower than general
-activation. It returns Rust only for the exact verified upstream fingerprint,
+The `OMARCHY_RS_CODEX_MODE=canary` route returns Rust only for the exact
+verified upstream fingerprint,
 when Pi/OMP and OpenCode sources are absent, `--limits-only` was not requested,
 and the Rust app-server probe did not report a protocol failure. Every rejected
 condition executes the absolute Python collector. Claude is independently
