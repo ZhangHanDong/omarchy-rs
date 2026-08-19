@@ -7,14 +7,14 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use omarchy_compat::activation::{
+use crate::activation::{
     ActivationConfig, CLAUDE_UPSTREAM_SHA256, CODEX_UPSTREAM_SHA256, OCTOSCODE_UPSTREAM_SHA256,
 };
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
 
-const EXECUTABLES: [&str; 6] = [
+pub(crate) const EXECUTABLES: [&str; 6] = [
     "omarchy-rs",
     "omarchy-agent-usage-update",
     "omarchy-agent-usage-codex-shadow",
@@ -441,7 +441,7 @@ mod tests {
     use super::*;
     use std::ffi::OsString;
 
-    use omarchy_compat::activation::PROVIDERS;
+    use crate::activation::PROVIDERS;
     use tempfile::TempDir;
 
     struct Fixture {

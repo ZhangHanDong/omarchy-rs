@@ -5,8 +5,8 @@ use std::{
     process::Command,
 };
 
-use omarchy_compat::activation::OCTOSCODE_UPSTREAM_SHA256;
-use omarchy_compat::shadow::{
+use omarchy_rs::activation::OCTOSCODE_UPSTREAM_SHA256;
+use omarchy_rs::shadow::{
     octoscode_canary_eligible, validate_provider_record, verified_absolute_executable,
 };
 use serde_json::Value;
@@ -32,7 +32,7 @@ fn main() -> Result<(), String> {
         .map(PathBuf::from)
         .or_else(|| env::var_os("HOME").map(|home| PathBuf::from(home).join(".octos")))
         .ok_or("HOME and OCTOS_HOME are unset")?;
-    let candidate = omarchy_agents::octoscode::collect_record(&home);
+    let candidate = omarchy_rs::octoscode::collect_record(&home);
     let record = if env::var("OMARCHY_RS_OCTOSCODE_MODE").as_deref() == Ok("canary")
         && octoscode_canary_eligible(
             fingerprint(&upstream).as_deref() == Ok(OCTOSCODE_UPSTREAM_SHA256),

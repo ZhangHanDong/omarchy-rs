@@ -1,6 +1,6 @@
 use std::{env, path::PathBuf, process::ExitCode};
 
-use omarchy_cli::{Command, Layout};
+use omarchy_rs::{Command, Layout};
 
 fn main() -> ExitCode {
     match run() {
@@ -29,5 +29,5 @@ fn run() -> Result<String, String> {
                 .map(|path| path.to_path_buf())
         })
         .ok_or("cannot locate release sibling directory")?;
-    omarchy_cli::execute(command, &layout, &source, &path)
+    omarchy_rs::execute(command, &layout, &source, &path)
 }

@@ -199,7 +199,7 @@ mod tests {
 
     fn fixture(name: &str) -> PathBuf {
         Path::new(env!("CARGO_MANIFEST_DIR"))
-            .join("../../fixtures/agent_usage/octoscode")
+            .join("fixtures/agent_usage/octoscode")
             .join(name)
     }
     fn home_with(name: &str) -> tempfile::TempDir {

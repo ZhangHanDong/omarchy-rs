@@ -14,12 +14,13 @@ a real home directory, credential store, or provider endpoint.
 | `claude-usage` | 0.2.3 | Credential-backed Anthropic OAuth request | Isolate |
 
 No unmodified candidate is directly accepted as a production dependency. The
-selected parser basis is the ZhangHanDong ccusage fork pinned to an immutable
-revision. Its `models-dev-pricing-only` patch gives Cargo consumers a
-deterministic offline build without a LiteLLM environment snapshot or download.
-All access is hidden behind an omarchy-rs backend so upstream API changes remain
-localized. `tokenusage` remains a fallback only after its parser is separated
-from provider HTTP and credential code behind disabled-by-default features.
+selected behavior basis is the ZhangHanDong ccusage fork pinned to an immutable
+revision. The single-package release keeps only the Codex and Claude local-file
+surface used by Omarchy as internal modules, with the fork revision recorded in
+source and checked by `dependency-probe`. This avoids an unpublished Git
+dependency in crates.io while keeping upstream changes reviewable against one
+pin. `tokenusage` remains a fallback only after its parser is separated from
+provider HTTP and credential code behind disabled-by-default features.
 
 `claude-usage` solves a different problem. It may be reconsidered for an
 explicitly enabled online quota feature, but it is not a local usage parser.
@@ -45,10 +46,10 @@ the large CLI/TUI/GUI stack, but `reqwest` is still unconditional and
 HTTP clients. Its declared MSRV is 1.87, above this project's current 1.85.
 
 The ccusage Codex and Claude adapters contain no network, credential, or unsafe
-surface found by source review. The fork keeps their `0.0.0`, unpublished API
-behind an internal backend and pins the entire Git graph. The core build script
-remains, but `models-dev-pricing-only` makes its input entirely repository-local.
-Fork provenance and replayable patch paths are recorded in `ccusage-fork.json`.
+surface found by source review. Their required local-file behavior is adapted
+inside `omarchy-rs`; the unpublished ccusage crates and their pricing build
+script are no longer production dependencies. Fork provenance and replayable
+patch paths remain recorded in `ccusage-fork.json`.
 
 `claude-usage` reads Claude credentials from the Linux credentials file or the
 macOS Keychain and calls Anthropic's OAuth usage endpoint. Disabling its
@@ -70,10 +71,7 @@ cargo deny check
 cargo test -p dependency-probe
 ```
 
-On 2026-08-19, `cargo metadata --locked`, both tree inspections, and
-`cargo audit` completed successfully over the 215-package workspace graph.
-`cargo tree --duplicates` reports `windows-sys` 0.52 and 0.61 through
-`terminal_size`; `cargo deny` records this as the configured duplicate warning,
-not a security or license failure. Its advisories, bans, licenses, and sources
-checks are all OK. The selected ccusage fork is resolved from its exact Git
-revision and included in the locked audit and license graph.
+On 2026-08-19, the first single-package archive built independently with no Git
+source in `Cargo.lock`. The original fork evaluation remains reproducible from
+its exact revision, while the crates.io graph contains registry dependencies
+only.

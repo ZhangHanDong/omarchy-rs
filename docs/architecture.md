@@ -21,14 +21,17 @@ Official Omarchy remains responsible for the desktop, system configuration,
 updates, migrations, and packages. `omarchy-rs` must not write into paths owned
 by `omarchy` or `omarchy-settings`.
 
-## Workspace
+## Package structure
 
-- `omarchy-cli`: lifecycle entry point, diagnostics, activation, and rollback.
-- `omarchy-compat`: upstream discovery, fingerprints, activation, rollback,
-  precedence probes, and eligibility decisions.
-- `omarchy-agents`: Agent Usage collectors and shared parsing model.
-- Additional domain crates are created only after a benchmark identifies a hot
-  path and a task Contract defines compatibility.
+crates.io exposes one `omarchy-rs` package. Its source remains grouped by
+responsibility: lifecycle management, upstream compatibility, and Agent Usage
+collectors compile as internal modules, while six explicit binary targets keep
+the installed command surface stable. `dependency-probe` is a workspace-only
+development package and is never part of the published dependency graph.
+
+New functionality starts as an internal module. A separate public crate is
+introduced only when it has an independent consumer and API, not merely to
+mirror an implementation directory.
 
 ## Deployment model
 

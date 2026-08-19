@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="themes/rust-lang/backgrounds/rust-forge-4k.png" alt="Rust Forge — an unofficial Rust-inspired Omarchy theme" width="100%">
+  <img src="https://raw.githubusercontent.com/Omarchy-rs/omarchy-rs/main/themes/rust-lang/backgrounds/rust-forge-4k.png" alt="Rust Forge — an unofficial Rust-inspired Omarchy theme" width="100%">
 </p>
 
 <p align="center"><em>Rust Forge — an original, unofficial Rust-inspired Omarchy theme.</em></p>
@@ -18,9 +18,25 @@ installed as a fallback.
 
 ## Current status
 
-Engineering and compatibility contracts are being established. No Omarchy
-command is implemented or replaced yet. The first planned pilot is the
-read-only Agent Usage collector, beginning with Codex fixtures.
+The first replacement experiment is operational. The Agent Usage overlay has
+native Rust collectors for Codex, Claude Code, Octoscode, and Grok; verified
+Codex, Claude Code, and Octoscode integrations retain their installed Python
+collectors as fallbacks. Grok is a native addition because stock Omarchy has no
+Grok collector.
+
+Install the release from crates.io, then install and activate the user overlay:
+
+```bash
+cargo install omarchy-rs
+omarchy-rs doctor
+omarchy-rs install
+omarchy-rs activate agent-usage
+omarchy-rs status
+```
+
+The overlay lives under `~/.local/share/omarchy-rs` and does not modify files
+owned by the Omarchy package. Use `omarchy-rs rollback agent-usage` for an
+offline rollback to the official commands.
 
 ## Rust Lang Omarchy theme
 

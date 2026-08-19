@@ -1,8 +1,63 @@
+[package]
+name = "omarchy-rs"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "Safe, reversible Rust user-space upgrades for Omarchy"
+repository = "https://github.com/Omarchy-rs/omarchy-rs"
+homepage = "https://github.com/Omarchy-rs/omarchy-rs"
+readme = "README.md"
+keywords = ["omarchy", "linux", "cli", "usage"]
+categories = ["command-line-utilities"]
+autobins = false
+exclude = [
+    "/.agent-spec/**",
+    "/docs/benchmarks/**",
+    "/issues/**",
+    "/themes/**",
+]
+
 [workspace]
 resolver = "3"
-members = ["crates/dependency-probe", "crates/omarchy-agents", "crates/omarchy-cli", "crates/omarchy-compat"]
+members = [".", "crates/dependency-probe"]
 
 [workspace.package]
+version = "0.1.0"
 edition = "2024"
 rust-version = "1.85"
 license = "MIT"
+
+[[bin]]
+name = "omarchy-rs"
+path = "crates/omarchy-cli/src/main.rs"
+
+[[bin]]
+name = "omarchy-agent-usage-update"
+path = "crates/omarchy-compat/src/bin/omarchy-agent-usage-update.rs"
+
+[[bin]]
+name = "omarchy-agent-usage-codex-shadow"
+path = "crates/omarchy-compat/src/bin/omarchy-agent-usage-codex-shadow.rs"
+
+[[bin]]
+name = "omarchy-agent-usage-claude-shadow"
+path = "crates/omarchy-compat/src/bin/omarchy-agent-usage-claude-shadow.rs"
+
+[[bin]]
+name = "omarchy-agent-usage-octoscode-shadow"
+path = "crates/omarchy-compat/src/bin/omarchy-agent-usage-octoscode-shadow.rs"
+
+[[bin]]
+name = "omarchy-agent-usage-grok"
+path = "crates/omarchy-compat/src/bin/omarchy-agent-usage-grok.rs"
+
+[dependencies]
+chrono = { version = "0.4.42", default-features = false, features = ["clock", "std"] }
+serde = { version = "1.0.228", features = ["derive"] }
+serde_json = "1.0.149"
+sha2 = "0.10.9"
+ureq = { version = "2.12.1", default-features = false, features = ["json", "tls"] }
+
+[dev-dependencies]
+tempfile = "3.27.0"

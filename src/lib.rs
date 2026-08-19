@@ -1,10 +1,26 @@
+#[path = "../crates/omarchy-compat/src/activation.rs"]
+pub mod activation;
+#[path = "../crates/omarchy-agents/src/benchmark.rs"]
 pub mod benchmark;
-mod ccusage_backend;
+#[path = "../crates/omarchy-agents/src/claude.rs"]
 pub mod claude;
+#[path = "../crates/omarchy-agents/src/codex.rs"]
 pub mod codex;
+#[path = "../crates/omarchy-agents/src/grok.rs"]
 pub mod grok;
+#[path = "../crates/omarchy-agents/src/octoscode.rs"]
 pub mod octoscode;
+#[path = "../crates/omarchy-agents/src/rpc.rs"]
 pub mod rpc;
+#[path = "../crates/omarchy-compat/src/shadow.rs"]
+pub mod shadow;
+
+#[path = "../crates/omarchy-cli/src/lib.rs"]
+mod cli;
+mod codex_adapter;
+mod release;
+
+pub use cli::{Command, Layout, execute};
 
 use std::path::Path;
 
@@ -30,5 +46,5 @@ pub struct CodexUsageEvent {
 pub fn load_codex_events_from_directory(
     sessions_dir: &Path,
 ) -> Result<Vec<CodexUsageEvent>, String> {
-    ccusage_backend::load_codex_events_from_directory(sessions_dir)
+    codex_adapter::load_codex_events_from_directory(sessions_dir)
 }

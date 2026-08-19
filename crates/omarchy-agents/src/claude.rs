@@ -5,7 +5,6 @@ use std::{
     time::{Duration as StdDuration, SystemTime, UNIX_EPOCH},
 };
 
-use ccusage_adapter_claude::usage_files;
 use chrono::{DateTime, Duration, Local, Utc};
 use serde_json::{Map, Value, json};
 
@@ -204,24 +203,29 @@ pub fn collect_local_record(config_dir: &Path) -> Result<Value, String> {
 }
 
 fn ordered_usage_files(config_dir: &Path) -> Vec<PathBuf> {
-    let allowed = usage_files(&[config_dir.to_path_buf()], None)
-        .into_iter()
-        .collect::<BTreeSet<_>>();
-    fn visit(directory: &Path, allowed: &BTreeSet<PathBuf>, out: &mut Vec<PathBuf>) {
+    fn visit(directory: &Path, out: &mut Vec<PathBuf>) {
         let Ok(entries) = fs::read_dir(directory) else {
             return;
         };
         for entry in entries.flatten() {
+            let Ok(file_type) = entry.file_type() else {
+                continue;
+            };
             let path = entry.path();
-            if path.is_dir() {
-                visit(&path, allowed, out);
-            } else if allowed.contains(&path) {
+            if file_type.is_dir() {
+                visit(&path, out);
+            } else if file_type.is_file()
+                && path
+                    .extension()
+                    .is_some_and(|extension| extension == "jsonl")
+            {
                 out.push(path);
             }
         }
     }
     let mut files = Vec::new();
-    visit(&config_dir.join("projects"), &allowed, &mut files);
+    visit(&config_dir.join("projects"), &mut files);
+    files.sort();
     files
 }
 
@@ -614,7 +618,7 @@ mod tests {
 
     fn fixture(name: &str) -> PathBuf {
         Path::new(env!("CARGO_MANIFEST_DIR"))
-            .join("../../fixtures/agent_usage/claude")
+            .join("fixtures/agent_usage/claude")
             .join(name)
     }
 

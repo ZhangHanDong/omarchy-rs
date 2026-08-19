@@ -1,7 +1,7 @@
 use std::{env, fs, path::PathBuf, process::Command};
 
-use omarchy_compat::activation::CODEX_UPSTREAM_SHA256;
-use omarchy_compat::shadow::{
+use omarchy_rs::activation::CODEX_UPSTREAM_SHA256;
+use omarchy_rs::shadow::{
     canary_eligible, compare_local_fields, sanitized_receipt, validate_record,
     verified_absolute_executable,
 };
@@ -19,7 +19,7 @@ fn main() -> Result<(), String> {
         .map(PathBuf::from)
         .or_else(|| env::var_os("HOME").map(|home| PathBuf::from(home).join(".codex")))
         .ok_or_else(|| "HOME and CODEX_HOME are unset".to_string())
-        .and_then(|codex_home| omarchy_agents::codex::collect_record(&codex_home.join("sessions")));
+        .and_then(|codex_home| omarchy_rs::codex::collect_record(&codex_home.join("sessions")));
 
     if env::var("OMARCHY_RS_CODEX_MODE").as_deref() == Ok("canary")
         && let Ok(record) = &candidate

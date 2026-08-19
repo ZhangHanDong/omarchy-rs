@@ -95,3 +95,32 @@ fn local_day(timestamp: &str) -> Option<String> {
         .ok()
         .map(|timestamp| timestamp.with_timezone(&Local).date_naive().to_string())
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn fixture(name: &str) -> std::path::PathBuf {
+        Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("fixtures/agent_usage/codex")
+            .join(name)
+    }
+
+    #[test]
+    fn codex_fixture_parity() {
+        let record = collect_local_record(&fixture("valid")).unwrap();
+        assert_eq!(record["totalPrompts"], 1);
+        assert_eq!(record["totalSessions"], 1);
+        assert_eq!(record["modelUsage"]["codex"]["inputTokens"], 100);
+        assert_eq!(record["modelUsage"]["codex"]["cacheReadInputTokens"], 20);
+        assert_eq!(record["modelUsage"]["codex"]["outputTokens"], 30);
+    }
+
+    #[test]
+    fn codex_malformed_record_parity() {
+        let record = collect_local_record(&fixture("malformed")).unwrap();
+        assert_eq!(record["totalPrompts"], 0);
+        assert_eq!(record["totalSessions"], 0);
+        assert_eq!(record["modelUsage"], json!({}));
+    }
+}

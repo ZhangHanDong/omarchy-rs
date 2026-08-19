@@ -190,10 +190,12 @@ mod tests {
         let record = ccusage_fork_record();
         assert!(validate_ccusage_fork_record(&record));
 
-        let manifest = fs::read_to_string(workspace().join("crates/omarchy-agents/Cargo.toml"))
-            .expect("production agent manifest exists");
-        assert!(manifest.contains(&format!("rev = \"{}\"", record.patch_revision)));
-        assert!(!manifest.contains("branch = \"omarchy-rs\""));
+        let manifest = fs::read_to_string(workspace().join("Cargo.toml"))
+            .expect("single-package release manifest exists");
+        let adapter = fs::read_to_string(workspace().join("src/codex_adapter.rs"))
+            .expect("internal Codex adapter exists");
+        assert!(adapter.contains(&record.patch_revision));
+        assert!(!manifest.contains("git ="));
     }
 
     #[test]

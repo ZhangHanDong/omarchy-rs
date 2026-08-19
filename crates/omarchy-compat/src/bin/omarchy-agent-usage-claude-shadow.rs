@@ -1,7 +1,7 @@
 use std::{env, fs, path::PathBuf, process::Command};
 
-use omarchy_compat::activation::CLAUDE_UPSTREAM_SHA256;
-use omarchy_compat::shadow::{
+use omarchy_rs::activation::CLAUDE_UPSTREAM_SHA256;
+use omarchy_rs::shadow::{
     claude_canary_eligible, validate_provider_record, verified_absolute_executable,
 };
 use sha2::{Digest, Sha256};
@@ -19,8 +19,8 @@ fn main() -> Result<(), String> {
         .or_else(|| env::var_os("HOME").map(|home| PathBuf::from(home).join(".claude")))
         .ok_or("HOME and CLAUDE_CONFIG_DIR are unset")?;
     let force = args.iter().any(|arg| arg == "--force");
-    let candidate = omarchy_agents::claude::CollectOptions::from_environment(force)
-        .and_then(|options| omarchy_agents::claude::collect_record(&config_dir, &options));
+    let candidate = omarchy_rs::claude::CollectOptions::from_environment(force)
+        .and_then(|options| omarchy_rs::claude::collect_record(&config_dir, &options));
 
     if env::var("OMARCHY_RS_CLAUDE_MODE").as_deref() == Ok("canary")
         && let Ok(record) = &candidate

@@ -12,7 +12,7 @@ fn main() -> Result<(), String> {
         .map(PathBuf::from)
         .or_else(|| env::var_os("HOME").map(|home| PathBuf::from(home).join(".grok")))
         .ok_or("HOME and GROK_HOME are unset")?;
-    let record = omarchy_agents::grok::collect_record(&home);
+    let record = omarchy_rs::grok::collect_record(&home);
     println!(
         "{}",
         serde_json::to_string(&record).map_err(|error| error.to_string())?

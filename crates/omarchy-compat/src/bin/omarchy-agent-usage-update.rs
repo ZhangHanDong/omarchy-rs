@@ -13,7 +13,7 @@ fn main() -> Result<ExitCode, String> {
         .map(PathBuf::from)
         .unwrap_or_else(|| PathBuf::from(DEFAULT_UPSTREAM_UPDATE));
     require_absolute_file(&upstream)?;
-    let activation = omarchy_compat::activation::load_activation();
+    let activation = omarchy_rs::activation::load_activation();
     let codex_wanted = agent_is_wanted(&args, "codex")?
         && activation
             .as_ref()
@@ -132,7 +132,7 @@ fn run_shadow(
     if !output.status.success() {
         return Ok(false);
     }
-    omarchy_compat::shadow::validate_provider_record(&output.stdout, agent)?;
+    omarchy_rs::shadow::validate_provider_record(&output.stdout, agent)?;
     write_state(agent, &output.stdout)?;
     Ok(true)
 }
@@ -156,7 +156,7 @@ fn run_native(args: &[String], agent: &str, env_name: &str) -> Result<bool, Stri
     if !output.status.success() {
         return Ok(false);
     }
-    omarchy_compat::shadow::validate_provider_record(&output.stdout, agent)?;
+    omarchy_rs::shadow::validate_provider_record(&output.stdout, agent)?;
     write_state(agent, &output.stdout)?;
     Ok(true)
 }

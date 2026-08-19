@@ -242,7 +242,7 @@ mod tests {
 
     fn fixture(path: &str) -> PathBuf {
         Path::new(env!("CARGO_MANIFEST_DIR"))
-            .join("../../fixtures/agent_usage/grok")
+            .join("fixtures/agent_usage/grok")
             .join(path)
     }
 
