@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "omarchy-rs.cleaner",
   "name": "Workspace Cleaner",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "author": "Omarchy-rs",
   "license": "MIT",
   "description": "Review and safely remove validated Rust and Node build artifacts with the omarchy-rs cleaner.",
