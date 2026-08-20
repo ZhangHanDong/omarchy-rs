@@ -447,8 +447,8 @@ pub fn normalize_limits_payload(payload: &Value) -> Vec<Value> {
     let session = payload.get("five_hour").and_then(Value::as_object);
     let weekly = payload
         .get("seven_day_oauth_apps")
-        .or_else(|| payload.get("seven_day"))
-        .and_then(Value::as_object);
+        .and_then(Value::as_object)
+        .or_else(|| payload.get("seven_day").and_then(Value::as_object));
     let scoped = payload["limits"].as_array().cloned().unwrap_or_default();
     let raw = session
         .into_iter()
@@ -692,6 +692,26 @@ mod tests {
         assert_eq!(limits[1]["percent"], 0.01);
         assert_eq!(limits[2]["title"], "Opus Weekly");
         assert_eq!(plan_label("default_claude_max_20x", ""), "Max 20x");
+    }
+
+    #[test]
+    fn claude_limits_falls_back_from_null_oauth_weekly() {
+        let payload = json!({
+            "five_hour": {"utilization": 25.0, "resets_at": "2030-01-01T00:00:00Z"},
+            "seven_day_oauth_apps": null,
+            "seven_day": {"utilization": 40.0, "resets_at": "2030-01-02T00:00:00Z"},
+            "limits": [{
+                "kind": "weekly_scoped",
+                "percent": 20.0,
+                "resets_at": "2030-01-03T00:00:00Z",
+                "scope": {"model": {"display_name": "Fable"}}
+            }]
+        });
+        let limits = normalize_limits_payload(&payload);
+        assert_eq!(limits.len(), 3);
+        assert_eq!(limits[1]["label"], "Weekly (7-day)");
+        assert_eq!(limits[1]["percent"], 0.4);
+        assert_eq!(limits[2]["title"], "Fable Weekly");
     }
 
     #[test]

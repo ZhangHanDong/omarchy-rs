@@ -129,7 +129,9 @@ fn collect_record_at(octos_home: &Path, now: DateTime<Local>) -> Value {
         "schemaVersion": 1, "id": "octoscode", "name": "Octoscode",
         "collectorBackend": "rust", "updatedAt": Utc::now().to_rfc3339(),
         "ready": true, "hasLocalStats": !turns.is_empty(), "tierLabel": "Local",
-        "usageStatusText": "", "authHelpText": "Run Octoscode to record usage.", "limits": [],
+        "usageStatusText": "Provider quotas unavailable",
+        "authHelpText": "Octoscode's public ledger provides local token totals, but no authoritative provider/model quota windows.",
+        "limits": [],
         "todayPrompts": today_prompts, "todaySessions": today_sessions.len(),
         "todayTotalTokens": today_by_model.values().sum::<u64>(), "todayTokensByModel": today_by_model,
         "recentDays": recent.into_iter().map(|(date, count)| json!({"date":date,"messageCount":count})).collect::<Vec<_>>(),
@@ -224,12 +226,27 @@ mod tests {
     }
 
     #[test]
+    fn octoscode_provider_quotas_are_explicitly_unavailable() {
+        let home = home_with("valid/ledger-synthetic.log");
+        let record = collect_record(home.path());
+        assert_eq!(record["limits"], json!([]));
+        assert_eq!(record["usageStatusText"], "Provider quotas unavailable");
+        assert!(
+            record["authHelpText"]
+                .as_str()
+                .unwrap()
+                .contains("no authoritative provider/model quota windows")
+        );
+    }
+
+    #[test]
     fn octoscode_malformed_and_repeated_turns() {
         let home = home_with("malformed/ledger-synthetic.log");
         let record = collect_record(home.path());
         assert_eq!(record["totalPrompts"], 1);
         assert_eq!(record["modelUsage"]["octoscode"]["inputTokens"], 30);
         assert_eq!(record["modelUsage"]["octoscode"]["outputTokens"], 4);
+        assert_eq!(record["limits"], json!([]));
     }
 
     #[test]

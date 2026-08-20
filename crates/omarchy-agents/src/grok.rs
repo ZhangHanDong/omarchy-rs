@@ -98,8 +98,8 @@ fn collect_record_at(grok_home: &Path, now: DateTime<Local>) -> Value {
         "ready": true,
         "hasLocalStats": !turns.is_empty(),
         "tierLabel": "Local",
-        "usageStatusText": "",
-        "authHelpText": "Run Grok CLI to record usage.",
+        "usageStatusText": "Weekly quota: Grok Settings → Usage",
+        "authHelpText": "Personal Grok exposes its shared Weekly pool in Settings → Usage, not through a supported CLI API. Local token totals are still shown.",
         "limits": [],
         "todayPrompts": today_prompts,
         "todaySessions": today_sessions.len(),
@@ -289,5 +289,26 @@ mod tests {
         assert_eq!(record["totalSessions"], 0);
         assert_eq!(record["limits"], json!([]));
         assert_eq!(record["hasLocalStats"], false);
+        assert_eq!(
+            record["usageStatusText"],
+            "Weekly quota: Grok Settings → Usage"
+        );
+    }
+
+    #[test]
+    fn grok_personal_quota_points_to_settings() {
+        let home = copy_fixture(&["valid/session-a.jsonl"]);
+        let record = collect_record(home.path());
+        assert_eq!(record["limits"], json!([]));
+        assert_eq!(
+            record["usageStatusText"],
+            "Weekly quota: Grok Settings → Usage"
+        );
+        assert!(
+            record["authHelpText"]
+                .as_str()
+                .unwrap()
+                .contains("not through a supported CLI API")
+        );
     }
 }

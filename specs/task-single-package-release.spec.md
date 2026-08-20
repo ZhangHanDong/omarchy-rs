@@ -16,7 +16,7 @@ ccusage parsing behavior.
 
 ## Decisions
 
-- crates.io exposes exactly one package named `omarchy-rs` at version `0.1.1`.
+- crates.io exposes exactly one package named `omarchy-rs` at version `0.1.5`.
 - Agent collectors, compatibility routing, and lifecycle management compile as
   internal modules of that package while retaining their current binaries.
 - Remove production Git dependencies from the published manifest; keep the
@@ -51,7 +51,7 @@ Scenario: Manifest exposes one public package
   Test: release_manifest_has_single_public_package
   Given the repository release manifest
   When its package and workspace membership are inspected
-  Then `omarchy-rs` version `0.1.1` is the only publishable package
+  Then `omarchy-rs` version `0.1.5` is the only publishable package
 
 Scenario: Registry build has no Git dependency
   Test: release_manifest_has_no_git_dependencies

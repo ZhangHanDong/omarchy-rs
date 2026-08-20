@@ -21,6 +21,7 @@ limits collection onto Rust for verified installations.
 - Read credentials only to send the OAuth access token to Anthropic's fixed usage endpoint; never persist or log the token.
 - Select Rust only for the verified upstream fingerprint and native Claude sources; Pi, OMP, OpenCode, unsupported flags, network/parser failure, or fingerprint drift select the absolute Python fallback.
 - Keep the overlay update command provider-selective so Codex and Claude can independently use or roll back their Rust collectors.
+- Treat a null `seven_day_oauth_apps` bucket as absent and fall through to a valid `seven_day` weekly bucket while retaining scoped model limits.
 - Use synthetic fixtures and fake local HTTP responses; tests never read the developer's HOME, credentials, prompts, or network.
 
 ## Boundaries
@@ -48,7 +49,7 @@ limits collection onto Rust for verified installations.
 
 Scenario: Native Claude fixture produces the upstream state shape
   Test:
-    Package: omarchy-agents
+    Package: omarchy-rs
     Filter: claude_fixture_parity
   Given a versioned native Claude transcript under an isolated config directory
   When the Rust collector scans the fixture
@@ -56,7 +57,7 @@ Scenario: Native Claude fixture produces the upstream state shape
 
 Scenario: Malformed and duplicate transcript records remain bounded
   Test:
-    Package: omarchy-agents
+    Package: omarchy-rs
     Filter: claude_malformed_and_duplicate_records
   Given malformed lines and duplicate assistant usage entries
   When the Rust collector scans the synthetic files
@@ -64,7 +65,7 @@ Scenario: Malformed and duplicate transcript records remain bounded
 
 Scenario: Aggregate fallback is used only without transcript usage
   Test:
-    Package: omarchy-agents
+    Package: omarchy-rs
     Filter: claude_stats_cache_and_history_fallback
   Given an isolated Claude directory with no usable transcript usage and synthetic aggregate files
   When the Rust collector builds local statistics
@@ -74,16 +75,24 @@ Scenario: Aggregate fallback is used only without transcript usage
 
 Scenario: OAuth limit payload maps to the panel schema
   Test:
-    Package: omarchy-agents
+    Package: omarchy-rs
     Filter: claude_limits_payload_parity
   Given a synthetic Anthropic payload with session, weekly, and scoped model limits
   When Rust normalizes its percentages and reset timestamps
   Then the limits and tier label equal the upstream JSON shape
   And no access token occurs in output or diagnostics
 
+Scenario: Null OAuth-app weekly bucket falls back to account weekly usage
+  Test:
+    Package: omarchy-rs
+    Filter: claude_limits_falls_back_from_null_oauth_weekly
+  Given a synthetic Anthropic payload with null `seven_day_oauth_apps`, valid `seven_day`, and a scoped weekly model limit
+  When Rust normalizes the weekly limits
+  Then the panel schema contains both `Weekly (7-day)` and the scoped model weekly limit
+
 Scenario: Missing or expired credentials return local-only status
   Test:
-    Package: omarchy-agents
+    Package: omarchy-rs
     Filter: claude_missing_and_expired_credentials
     Level: integration
     Test Double: isolated_credentials_and_forbidden_network
@@ -95,7 +104,7 @@ Scenario: Missing or expired credentials return local-only status
 
 Scenario: Verified native Claude input selects Rust
   Test:
-    Package: omarchy-compat
+    Package: omarchy-rs
     Filter: claude_canary_selects_verified_rust
   Given the verified upstream fingerprint, native Claude sources, supported flags, and a valid Rust record
   When the Claude canary runs
@@ -103,7 +112,7 @@ Scenario: Verified native Claude input selects Rust
 
 Scenario: Unverified Claude input fails open to Python
   Test:
-    Package: omarchy-compat
+    Package: omarchy-rs
     Filter: claude_canary_falls_back_for_unverified_surfaces
   Given fingerprint drift, Pi, OMP, OpenCode, unsupported flags, or a Rust collector failure
   When the Claude canary runs

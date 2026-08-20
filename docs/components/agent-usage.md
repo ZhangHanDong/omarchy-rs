@@ -66,6 +66,28 @@ responses, credentials, or telemetry. Grok has no Python fallback because this
 is a new provider integration rather than a replacement; malformed and unknown
 records are skipped and no rate limit or subscription data is invented.
 
+## Quota windows for Grok and Octoscode
+
+The panel distinguishes local usage totals from authoritative account quotas.
+Local token totals cannot be converted into a Session, 5-hour, Weekly, or
+Monthly percentage because provider pricing and allowance rules are not present
+in the local records.
+
+For a personal Grok or SuperGrok account, xAI currently exposes one shared
+Weekly pool in **Grok → Settings → Usage**. The public Grok CLI does not expose
+that percentage or reset time, so the Rust collector keeps `limits` empty and
+shows `Weekly quota: Grok Settings → Usage`. It does not inspect browser cookies
+or ask for an xAI Management Key. Management Keys belong to the separate xAI
+Business/team API billing surface and do not represent a personal Grok
+subscription.
+
+Octoscode can use different providers and models. Its public local ledger
+contains model names and token totals, but no authoritative provider quota
+snapshot. The Rust collector therefore keeps `limits` empty and shows
+`Provider quotas unavailable`. If Octoscode later exposes a public, typed quota
+snapshot, individual provider/model windows can be added without inferring them
+from token totals.
+
 ## User overlay deployment
 
 `omarchy-rs install` installs the updater and provider shadows under
