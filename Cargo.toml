@@ -8,7 +8,7 @@ description = "Safe, reversible Rust user-space upgrades for Omarchy"
 repository = "https://github.com/Omarchy-rs/omarchy-rs"
 homepage = "https://github.com/Omarchy-rs/omarchy-rs"
 readme = "README.md"
-keywords = ["omarchy", "linux", "cli", "usage"]
+keywords = ["omarchy", "linux", "cli", "usage", "cleanup"]
 categories = ["command-line-utilities"]
 autobins = false
 exclude = [
@@ -61,3 +61,8 @@ ureq = { version = "2.12.1", default-features = false, features = ["json", "tls"
 
 [dev-dependencies]
 tempfile = "3.27.0"
+
+[[bench]]
+name = "cleaner-benchmark"
+path = "benches/cleaner-benchmark.rs"
+harness = false

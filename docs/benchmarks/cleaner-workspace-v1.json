@@ -1,0 +1,33 @@
+{
+  "eligibility": {
+    "defaultEnabled": true,
+    "reasons": []
+  },
+  "report": {
+    "config": {
+      "bytesPerFile": 128,
+      "filesPerArtifact": 1000,
+      "fixtureVersion": "workspace-v1",
+      "projects": 12,
+      "samples": 30,
+      "warmups": 3
+    },
+    "python": {
+      "childProcessCount": 0,
+      "maxRssKib": 15000,
+      "medianCpuMs": 130.0,
+      "medianReadBytes": 0,
+      "medianWallMs": 140.37048800000002,
+      "medianWrittenBytes": 0
+    },
+    "rust": {
+      "childProcessCount": 0,
+      "maxRssKib": 2988,
+      "medianCpuMs": 10.0,
+      "medianReadBytes": 0,
+      "medianWallMs": 19.0146235,
+      "medianWrittenBytes": 0
+    },
+    "schemaVersion": 1
+  }
+}

@@ -17,6 +17,9 @@ fn main() -> ExitCode {
 
 fn run() -> Result<String, String> {
     let args = env::args().skip(1).collect::<Vec<_>>();
+    if args.first().map(String::as_str) == Some("cleaner") {
+        return omarchy_rs::cleaner::execute_cli(&args[1..]);
+    }
     let command = Command::parse(&args)?;
     if command == Command::Version {
         return Ok(format!("omarchy-rs {}", env!("CARGO_PKG_VERSION")));

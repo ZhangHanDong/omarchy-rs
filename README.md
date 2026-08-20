@@ -46,6 +46,35 @@ Rust or the Python fallback. See [Agent Usage](docs/components/agent-usage.md)
 and [deployment](docs/deployment.md) for the complete data flow and rollback
 rules.
 
+The workspace cleaner is available as a guarded Rust engine and user-owned
+Omarchy panel. It scans `~/Work` by default, recognizes only project-validated
+Rust and Node build artifacts, and requires a persisted confirmation plan
+before removal:
+
+```bash
+omarchy-rs cleaner install-plugin
+omarchy plugin enable omarchy-rs.cleaner
+omarchy-rs cleaner scan --root ~/Work --json
+```
+
+Click the broom in the Omarchy bar, select candidates, choose **Review
+cleanup**, and then choose **Confirm removal**. The broom stays white by
+default and highlights only when the regenerable total reaches the configured
+threshold (400 GiB by default):
+
+```bash
+omarchy bar set omarchy-rs.cleaner cleanupAlertGiB 600
+omarchy bar set omarchy-rs.cleaner root ~/Work
+```
+
+The QML plugin is a presentation layer for `omarchy-rs cleaner`; it does not
+scan or remove files independently. Install and release the plugin with the
+same `omarchy-rs` crate/CLI version so its JSON command contract cannot drift.
+See the [Workspace Cleaner guide](docs/components/workspace-cleaner.md) for
+installation, safety behavior, CLI use, configuration, and removal, and the
+[cleaner benchmark](docs/benchmarks/workspace-cleaner.md) for the reproducible
+Python/Rust comparison.
+
 ## Rust Lang Omarchy theme
 
 The Rust-inspired theme shown above is bundled under
@@ -63,6 +92,7 @@ it as a user theme without modifying system-owned Omarchy files.
 - [Contributing](CONTRIBUTING.md)
 - [Project Contract](specs/project.spec.md)
 - [Agent Usage pilot Contract](specs/task-agent-usage-parity.spec.md)
+- [Workspace Cleaner Contract](specs/task-workspace-cleaner-plugin.spec.md)
 
 Machine-consumable requirements and decisions live under `knowledge/` and are
 validated with `agent-spec`.

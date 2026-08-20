@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "id": "omarchy-rs.cleaner",
+  "name": "Workspace Cleaner",
+  "version": "0.1.0",
+  "author": "Omarchy-rs",
+  "license": "MIT",
+  "description": "Review and safely remove validated Rust and Node build artifacts with the omarchy-rs cleaner.",
+  "kinds": ["bar-widget"],
+  "entryPoints": {
+    "barWidget": "Panel.qml"
+  },
+  "barWidget": {
+    "displayName": "Workspace Cleaner",
+    "description": "Scan ~/Work for validated, regenerable Rust and Node build artifacts and clean only an explicitly confirmed plan.",
+    "category": "System",
+    "aliases": ["cleaner", "cleanup", "build-artifacts"],
+    "allowMultiple": false,
+    "defaultSection": "right",
+    "defaults": {
+      "root": "~/Work",
+      "cleanupAlertGiB": 400
+    },
+    "schema": [
+      {
+        "key": "root",
+        "type": "path",
+        "label": "Workspace root",
+        "defaultValue": "~/Work",
+        "description": "An absolute directory below HOME. The default expands to ~/Work."
+      },
+      {
+        "key": "cleanupAlertGiB",
+        "type": "integer",
+        "label": "Highlight threshold (GiB)",
+        "min": 1,
+        "max": 10000,
+        "step": 50,
+        "defaultValue": 400,
+        "description": "Highlight the broom when regenerable artifacts reach this size."
+      }
+    ]
+  }
+}

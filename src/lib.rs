@@ -4,6 +4,8 @@ pub mod activation;
 pub mod benchmark;
 #[path = "../crates/omarchy-agents/src/claude.rs"]
 pub mod claude;
+#[path = "../crates/omarchy-cleaner/src/lib.rs"]
+pub mod cleaner;
 #[path = "../crates/omarchy-agents/src/codex.rs"]
 pub mod codex;
 #[path = "../crates/omarchy-agents/src/grok.rs"]
