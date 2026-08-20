@@ -75,6 +75,22 @@ installation, safety behavior, CLI use, configuration, and removal, and the
 [cleaner benchmark](docs/benchmarks/workspace-cleaner.md) for the reproducible
 Python/Rust comparison.
 
+The Local Skill Manager treats `~/.agents/skills` as the portable source and
+shows activation across Claude Code, Codex, Grok, and Octoscode. Claude Code
+and Codex receive manager-owned links, Grok uses its native `.agents`
+discovery, and Octoscode is changed only through its public `skills` command:
+
+```bash
+omarchy-rs skills install-plugin
+omarchy plugin enable omarchy-rs.skills
+omarchy-rs skills scan --json
+```
+
+The panel never reads Skill instruction bodies or Agent credentials, logs,
+prompts, sessions, databases, or profiles. A sync or cancellation requires a
+persisted review plan and confirmation token, and foreign destinations are
+left untouched. See the [Local Skill Manager guide](docs/components/local-skill-manager.md).
+
 ## Rust Lang Omarchy theme
 
 The Rust-inspired theme shown above is bundled under
@@ -93,6 +109,7 @@ it as a user theme without modifying system-owned Omarchy files.
 - [Project Contract](specs/project.spec.md)
 - [Agent Usage pilot Contract](specs/task-agent-usage-parity.spec.md)
 - [Workspace Cleaner Contract](specs/task-workspace-cleaner-plugin.spec.md)
+- [Local Skill Manager Contract](specs/task-local-skill-manager-plugin.spec.md)
 
 Machine-consumable requirements and decisions live under `knowledge/` and are
 validated with `agent-spec`.

@@ -16,6 +16,8 @@ pub mod octoscode;
 pub mod rpc;
 #[path = "../crates/omarchy-compat/src/shadow.rs"]
 pub mod shadow;
+#[path = "../crates/omarchy-skills/src/lib.rs"]
+pub mod skills;
 
 #[path = "../crates/omarchy-cli/src/lib.rs"]
 mod cli;

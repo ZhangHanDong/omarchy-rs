@@ -20,6 +20,9 @@ fn run() -> Result<String, String> {
     if args.first().map(String::as_str) == Some("cleaner") {
         return omarchy_rs::cleaner::execute_cli(&args[1..]);
     }
+    if args.first().map(String::as_str) == Some("skills") {
+        return omarchy_rs::skills::execute_cli(&args[1..]);
+    }
     let command = Command::parse(&args)?;
     if command == Command::Version {
         return Ok(format!("omarchy-rs {}", env!("CARGO_PKG_VERSION")));

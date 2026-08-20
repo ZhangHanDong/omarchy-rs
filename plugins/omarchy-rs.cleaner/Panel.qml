@@ -247,24 +247,12 @@ Panel {
                 height: 1
               }
 
-              BorderSurface {
+              RustBadge {
                 id: rustBadge
-                implicitWidth: rustBadgeText.implicitWidth + Style.space(10)
-                implicitHeight: rustBadgeText.implicitHeight + Style.space(4)
                 anchors.verticalCenter: parent.verticalCenter
-                color: root.rustAccent
-                borderSpec: Border.controlSpec("selected", root.rustAccent, root.rustAccent)
-                radius: Style.cornerRadius
-
-                Text {
-                  id: rustBadgeText
-                  anchors.centerIn: parent
-                  text: ""
-                  color: "#1a0d08"
-                  font.family: root.fontFamily
-                  font.pixelSize: Style.font.title
-                  font.bold: true
-                }
+                highlighted: true
+                foreground: root.foreground
+                fontFamily: root.fontFamily
               }
             }
 

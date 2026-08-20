@@ -14,6 +14,7 @@ pub const RECENT_WRITE_GUARD: Duration = Duration::from_secs(300);
 const PLUGIN_ID: &str = "omarchy-rs.cleaner";
 const PLUGIN_MANIFEST: &str = include_str!("../../../plugins/omarchy-rs.cleaner/manifest.json");
 const PLUGIN_PANEL: &str = include_str!("../../../plugins/omarchy-rs.cleaner/Panel.qml");
+const RUST_BADGE: &str = include_str!("../../../plugins/common/RustBadge.qml");
 
 #[derive(Clone, Debug)]
 pub struct CleanerLayout {
@@ -714,6 +715,7 @@ pub fn install_plugin(layout: &CleanerLayout) -> Result<PathBuf, String> {
     let sources = [
         ("manifest.json", PLUGIN_MANIFEST),
         ("Panel.qml", PLUGIN_PANEL),
+        ("RustBadge.qml", RUST_BADGE),
     ];
     for (name, contents) in sources {
         atomic_bytes(&destination.join(name), contents.as_bytes())?;

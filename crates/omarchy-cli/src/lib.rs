@@ -123,7 +123,7 @@ impl Command {
             [command, component] if command == "rollback" && component == "agent-usage" => {
                 Ok(Self::RollbackAgentUsage)
             }
-            _ => Err("usage: omarchy-rs <--version|-V|doctor [--json]|install|activate agent-usage|status [--json]|rollback agent-usage|cleaner ...>".into()),
+            _ => Err("usage: omarchy-rs <--version|-V|doctor [--json]|install|activate agent-usage|status [--json]|rollback agent-usage|cleaner ...|skills ...>".into()),
         }
     }
 }

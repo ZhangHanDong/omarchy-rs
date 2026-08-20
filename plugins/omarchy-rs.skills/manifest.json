@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "id": "omarchy-rs.skills",
+  "name": "Local Skill Manager",
+  "version": "0.1.3",
+  "author": "Omarchy-rs",
+  "license": "MIT",
+  "description": "Inspect and safely activate local Skills for Claude Code, Codex, Grok, and Octoscode.",
+  "kinds": ["bar-widget"],
+  "entryPoints": { "barWidget": "Panel.qml" },
+  "barWidget": {
+    "displayName": "Local Skill Manager",
+    "description": "Manage ~/.agents/skills without modifying agent-private state.",
+    "category": "Development",
+    "aliases": ["skills", "agents", "codex", "claude"],
+    "allowMultiple": false,
+    "defaultSection": "right",
+    "defaults": {},
+    "schema": []
+  }
+}
