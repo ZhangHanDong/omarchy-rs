@@ -35,6 +35,16 @@ omarchy-rs status
 omarchy-rs --version
 ```
 
+After `omarchy-rs install`, the user overlay also provides the short `omrs`
+command. Both names execute the same binary, so new interactive commands can
+use `omrs` while existing scripts keep using `omarchy-rs`:
+
+```bash
+omrs doctor
+omrs learn books --json
+omrs cleaner scan --root ~/Work --json
+```
+
 The overlay lives under `~/.local/share/omarchy-rs` and does not modify files
 owned by the Omarchy package. Use `omarchy-rs rollback agent-usage` for an
 offline rollback to the official commands.
@@ -91,6 +101,22 @@ prompts, sessions, databases, or profiles. A sync or cancellation requires a
 persisted review plan and confirmation token, and foreign destinations are
 left untouched. See the [Local Skill Manager guide](docs/components/local-skill-manager.md).
 
+Custom Learn Books and guarded single-chapter Agent translation are available
+through the same CLI. The integration preserves the user's existing Omarchy
+menu extension and leaves package-owned Learn entries unchanged:
+
+```bash
+omarchy-rs learn add --id rust-book --label "The Rust Book" \
+  --url "https://doc.rust-lang.org/book/"
+omarchy-rs learn sync-menu
+```
+
+The generated **Learn → Agent Translate** submenu supports confirmed Codex,
+Claude, and Grok translation with bounded HTTPS fetching and escaped local
+HTML caching. It supports public mdBook/GitHub Pages URLs and Mihomo Fake-IP
+DNS, while retaining private-address and redirect protections. See the
+[Learn Books guide](docs/components/learn-books.md).
+
 ## Rust Lang Omarchy theme
 
 The Rust-inspired theme shown above is bundled under
@@ -110,6 +136,7 @@ it as a user theme without modifying system-owned Omarchy files.
 - [Agent Usage pilot Contract](specs/task-agent-usage-parity.spec.md)
 - [Workspace Cleaner Contract](specs/task-workspace-cleaner-plugin.spec.md)
 - [Local Skill Manager Contract](specs/task-local-skill-manager-plugin.spec.md)
+- [Learn Books Contract](specs/task-learn-books-agent-translation.spec.md)
 
 Machine-consumable requirements and decisions live under `knowledge/` and are
 validated with `agent-spec`.

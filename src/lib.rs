@@ -10,6 +10,8 @@ pub mod cleaner;
 pub mod codex;
 #[path = "../crates/omarchy-agents/src/grok.rs"]
 pub mod grok;
+#[path = "../crates/omarchy-learn/src/lib.rs"]
+pub mod learn;
 #[path = "../crates/omarchy-agents/src/octoscode.rs"]
 pub mod octoscode;
 #[path = "../crates/omarchy-agents/src/rpc.rs"]

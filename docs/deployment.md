@@ -18,6 +18,7 @@ The default layout is:
 ~/.local/share/omarchy-rs/
 ├── bin/
 │   ├── omarchy-rs -> ../libexec/omarchy-rs
+│   ├── omrs -> ../libexec/omarchy-rs
 │   └── omarchy-agent-usage-update -> ../libexec/omarchy-agent-usage-update
 └── libexec/
     ├── omarchy-rs
@@ -35,8 +36,8 @@ graphical session PATH. Activation refuses to proceed when this precedence is
 not observable; it never creates a shim that cannot take effect.
 
 ```bash
-omarchy-rs activate agent-usage
-omarchy-rs status --json
+omrs activate agent-usage
+omrs status --json
 ```
 
 After activation, Omarchy's panel continues to run the familiar
@@ -57,7 +58,7 @@ metadata and has no stock Python collector to fall back to.
 Rollback is offline and retains installed release files for later activation:
 
 ```bash
-omarchy-rs rollback agent-usage
+omrs rollback agent-usage
 ```
 
 Rollback removes only the owned updater shim and activation record. Command

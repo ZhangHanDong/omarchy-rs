@@ -22,6 +22,7 @@ upstream command resolution without network access.
 - Activate Agent Usage with one owned updater symlink under `$XDG_DATA_HOME/omarchy-rs/bin`; never overwrite a foreign file or symlink.
 - Persist enabled providers in `$XDG_CONFIG_HOME/omarchy-rs/activation.json` and let the Rust updater pass provider-specific canary mode to its sibling shadows.
 - Support `doctor`, `install`, `activate agent-usage`, `status --json`, and `rollback agent-usage` without sudo or network access.
+- Install `omrs` as an owned short alias to the same `omarchy-rs` CLI while preserving the long command for compatibility.
 - Report upstream fingerprint drift as unverified while retaining the Python fallback.
 
 ## Boundaries
@@ -33,6 +34,7 @@ upstream command resolution without network access.
 - docs/architecture.md
 - docs/components/agent-usage.md
 - docs/deployment.md
+- README.md
 - specs/task-user-overlay-lifecycle.spec.md
 
 ### Forbidden
@@ -47,15 +49,23 @@ upstream command resolution without network access.
 
 Scenario: Release siblings install atomically
   Test:
-    Package: omarchy-cli
+    Package: omarchy-rs
     Filter: install_copies_release_siblings_and_manifest
   Given isolated data and config homes plus a complete release sibling directory
   When `install` copies the Agent Usage executables
   Then every installed artifact and manifest is under the isolated user homes
 
+Scenario: Install publishes one owned short CLI alias
+  Test:
+    Package: omarchy-rs
+    Filter: install_creates_owned_omrs_alias
+  Given an isolated user bin directory without an `omrs` entry
+  When `install` publishes the CLI shims
+  Then `omrs` and `omarchy-rs` resolve to the same installed executable
+
 Scenario: Incomplete release refuses installation
   Test:
-    Package: omarchy-cli
+    Package: omarchy-rs
     Filter: install_rejects_missing_release_sibling
   Given a release sibling directory missing one required executable
   When `install` validates its source set
@@ -66,7 +76,7 @@ Scenario: Incomplete release refuses installation
 Scenario: Agent Usage activation owns one shim
   Level: integration
   Test:
-    Package: omarchy-cli
+    Package: omarchy-rs
     Filter: activate_agent_usage_creates_owned_shim_and_config
   Given an installed manifest and a PATH where the overlay bin directory precedes upstream
   When `activate agent-usage` runs
@@ -74,7 +84,7 @@ Scenario: Agent Usage activation owns one shim
 
 Scenario: Foreign shim blocks activation
   Test:
-    Package: omarchy-cli
+    Package: omarchy-rs
     Filter: activate_refuses_foreign_shim
   Given an existing updater shim not recorded in the installation manifest
   When `activate agent-usage` runs
@@ -83,7 +93,7 @@ Scenario: Foreign shim blocks activation
 Scenario: Unsupported precedence blocks activation
   Level: integration
   Test:
-    Package: omarchy-cli
+    Package: omarchy-rs
     Filter: activate_refuses_unsupported_precedence
   Given the overlay bin directory does not precede the upstream updater in PATH
   When `activate agent-usage` runs
@@ -93,7 +103,7 @@ Scenario: Unsupported precedence blocks activation
 
 Scenario: JSON status reports provider eligibility and drift
   Test:
-    Package: omarchy-cli
+    Package: omarchy-rs
     Filter: status_json_reports_backend_and_drift
   Given one verified provider fingerprint and one changed provider fingerprint
   When `status --json` inspects the installed overlay
@@ -102,7 +112,7 @@ Scenario: JSON status reports provider eligibility and drift
 Scenario: Offline rollback removes only the owned shim
   Level: integration
   Test:
-    Package: omarchy-cli
+    Package: omarchy-rs
     Filter: rollback_restores_upstream_resolution_offline
   Given an activated owned updater shim and no network access
   When `rollback agent-usage` runs

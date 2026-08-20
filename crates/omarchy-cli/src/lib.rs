@@ -92,6 +92,9 @@ impl Layout {
     fn cli_shim(&self) -> PathBuf {
         self.bin().join("omarchy-rs")
     }
+    fn short_cli_shim(&self) -> PathBuf {
+        self.bin().join("omrs")
+    }
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -123,7 +126,7 @@ impl Command {
             [command, component] if command == "rollback" && component == "agent-usage" => {
                 Ok(Self::RollbackAgentUsage)
             }
-            _ => Err("usage: omarchy-rs <--version|-V|doctor [--json]|install|activate agent-usage|status [--json]|rollback agent-usage|cleaner ...|skills ...>".into()),
+            _ => Err("usage: omarchy-rs <--version|-V|doctor [--json]|install|activate agent-usage|status [--json]|rollback agent-usage|cleaner ...|skills ...|learn ...>".into()),
         }
     }
 }
@@ -188,7 +191,9 @@ fn install(layout: &Layout, release_dir: &Path) -> Result<String, String> {
         });
     }
     fs::create_dir_all(layout.bin()).map_err(|error| error.to_string())?;
-    ensure_owned_symlink(&layout.cli_shim(), &layout.libexec().join("omarchy-rs"))?;
+    let installed_cli = layout.libexec().join("omarchy-rs");
+    ensure_owned_symlink(&layout.cli_shim(), &installed_cli)?;
+    ensure_owned_symlink(&layout.short_cli_shim(), &installed_cli)?;
     let manifest = InstallManifest {
         schema_version: 1,
         libexec: layout.libexec(),
@@ -532,6 +537,21 @@ mod tests {
         assert!(fixture.layout.manifest().starts_with(fixture.root.path()));
         assert_eq!(
             fs::read_link(fixture.layout.cli_shim()).unwrap(),
+            fixture.layout.libexec().join("omarchy-rs")
+        );
+    }
+
+    #[test]
+    fn install_creates_owned_omrs_alias() {
+        let fixture = Fixture::new();
+        fixture.install();
+        let installed_cli = fixture.layout.libexec().join("omarchy-rs");
+        assert_eq!(
+            fs::read_link(fixture.layout.cli_shim()).unwrap(),
+            installed_cli
+        );
+        assert_eq!(
+            fs::read_link(fixture.layout.short_cli_shim()).unwrap(),
             fixture.layout.libexec().join("omarchy-rs")
         );
     }
