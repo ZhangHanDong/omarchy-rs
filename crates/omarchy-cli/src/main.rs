@@ -29,6 +29,9 @@ fn run() -> Result<String, String> {
     if args.first().map(String::as_str) == Some("network") {
         return omarchy_rs::network::execute_cli(&args[1..]);
     }
+    if args.first().map(String::as_str) == Some("plugin") {
+        return omarchy_rs::plugins::execute_cli(&args[1..]);
+    }
     let command = Command::parse(&args)?;
     if command == Command::Version {
         return Ok(format!("omarchy-rs {}", env!("CARGO_PKG_VERSION")));

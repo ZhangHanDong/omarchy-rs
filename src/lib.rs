@@ -16,6 +16,8 @@ pub mod learn;
 pub mod network;
 #[path = "../crates/omarchy-agents/src/octoscode.rs"]
 pub mod octoscode;
+#[path = "../crates/omarchy-plugins/src/lib.rs"]
+pub mod plugins;
 #[path = "../crates/omarchy-agents/src/rpc.rs"]
 pub mod rpc;
 #[path = "../crates/omarchy-compat/src/shadow.rs"]

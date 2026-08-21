@@ -132,6 +132,7 @@ it as a user theme without modifying system-owned Omarchy files.
 - [Dependency policy](docs/dependency-policy.md)
 - [Roadmap](docs/roadmap.md)
 - [Network Inspector](docs/components/network-inspector.md)
+- [Plugin Manager](docs/components/plugin-manager.md)
 - [Contributing](CONTRIBUTING.md)
 - [Project Contract](specs/project.spec.md)
 - [Agent Usage pilot Contract](specs/task-agent-usage-parity.spec.md)
