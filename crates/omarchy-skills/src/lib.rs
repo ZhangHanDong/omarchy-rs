@@ -23,6 +23,7 @@ pub struct SkillsLayout {
     pub state_root: PathBuf,
     pub config_root: PathBuf,
     pub octos_executable: PathBuf,
+    pub octoscode_executable: PathBuf,
     pub octos_profile: String,
 }
 
@@ -41,6 +42,9 @@ impl SkillsLayout {
             octos_executable: env::var_os("OMARCHY_RS_OCTOS")
                 .map(PathBuf::from)
                 .unwrap_or_else(|| home.join(".octos/bin/octos")),
+            octoscode_executable: env::var_os("OMARCHY_RS_OCTOSCODE")
+                .map(PathBuf::from)
+                .unwrap_or_else(|| home.join(".cargo/bin/octoscode")),
             octos_profile: env::var("OMARCHY_RS_OCTOS_PROFILE").unwrap_or_else(|_| "octos".into()),
             home,
         })
@@ -219,7 +223,7 @@ pub fn scan(layout: &SkillsLayout) -> Result<SkillsReport, String> {
             if shared_names.contains(&name) {
                 continue;
             }
-            records.push(record_native(agent, &path, name)?);
+            records.push(record_native(layout, agent, &path, name)?);
         }
     }
 
@@ -342,7 +346,12 @@ fn record_shared(
     })
 }
 
-fn record_native(agent: Agent, path: &Path, fallback: String) -> Result<SkillRecord, String> {
+fn record_native(
+    layout: &SkillsLayout,
+    agent: Agent,
+    path: &Path,
+    fallback: String,
+) -> Result<SkillRecord, String> {
     let metadata = skill_metadata(path, &fallback)?;
     let canonical = path.canonicalize().unwrap_or_else(|_| path.to_path_buf());
     Ok(SkillRecord {
@@ -363,12 +372,23 @@ fn record_native(agent: Agent, path: &Path, fallback: String) -> Result<SkillRec
         bytes: metadata.bytes,
         healthy: metadata.reason.is_none(),
         health_reason: metadata.reason,
-        activations: vec![AgentActivation {
-            agent,
-            state: "active-read-only".into(),
-            destination: Some(path.to_path_buf()),
-            detail: None,
-        }],
+        activations: {
+            let mut values = vec![AgentActivation {
+                agent,
+                state: "active-read-only".into(),
+                destination: Some(path.to_path_buf()),
+                detail: None,
+            }];
+            if agent == Agent::Codex && layout.octoscode_executable.is_file() {
+                values.push(AgentActivation {
+                    agent: Agent::Octoscode,
+                    state: "backend-visible".into(),
+                    destination: Some(path.to_path_buf()),
+                    detail: Some("via=codex-compatible-backend".into()),
+                });
+            }
+            values
+        },
     })
 }
 
@@ -1026,6 +1046,7 @@ mod tests {
                     state_root: temp.path().join("state"),
                     config_root: temp.path().join("config"),
                     octos_executable: temp.path().join("missing-octos"),
+                    octoscode_executable: temp.path().join("missing-octoscode"),
                     octos_profile: "test-profile".into(),
                     home,
                 },
@@ -1226,6 +1247,38 @@ mod tests {
         let result = apply_plan(&fixture.layout, &plan.id, &plan.confirmation_token).unwrap();
         assert_eq!(result.items[0].reason.as_deref(), Some("octos-unavailable"));
         assert!(!fixture.layout.home.join(".octos").exists());
+    }
+
+    #[test]
+    fn skills_octoscode_shows_backend_visible_codex_skills() {
+        let mut fixture = Fixture::new();
+        let native = fixture
+            .layout
+            .home
+            .join(".codex/skills/agent-spec-tool-first");
+        fs::create_dir_all(&native).unwrap();
+        fs::write(
+            native.join("SKILL.md"),
+            "---\nname: agent-spec-tool-first\ndescription: contracts\n---\nbody\n",
+        )
+        .unwrap();
+        fixture.layout.octoscode_executable = PathBuf::from("/bin/true");
+        let report = scan(&fixture.layout).unwrap();
+        let skill = report
+            .skills
+            .iter()
+            .find(|skill| skill.name == "agent-spec-tool-first")
+            .unwrap();
+        let activation = skill
+            .activations
+            .iter()
+            .find(|activation| activation.agent == Agent::Octoscode)
+            .unwrap();
+        assert_eq!(activation.state, "backend-visible");
+        assert_eq!(
+            activation.detail.as_deref(),
+            Some("via=codex-compatible-backend")
+        );
     }
 
     #[test]

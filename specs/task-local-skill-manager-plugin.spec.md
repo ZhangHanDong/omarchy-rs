@@ -26,6 +26,7 @@ native discovery, profile isolation, bundled content, and update path.
 - Activate Claude Code and Codex with relative or absolute symlinks recorded in an omarchy-rs ownership receipt; refuse a non-owned destination.
 - Treat Grok as active when native `.agents/skills` discovery is available; do not copy a duplicate into `.grok/skills`.
 - Invoke the configured Octos executable directly with argv equivalent to `octos skills --profile PROFILE install LOCAL_PATH --force`; never invoke a shell or inspect Octos instance/profile storage.
+- Distinguish the Octos native installer from the `octoscode` UI client; when octoscode is installed, expose Codex-native Skills as read-only `backend-visible` records instead of incorrectly hiding them or claiming they were installed into Octos.
 - Persist versioned synchronization plans under `$XDG_STATE_HOME/omarchy-rs/skills/plans`; apply requires the plan id and token and revalidates source hashes and destinations.
 - Embed and install the QML plugin only at `$XDG_CONFIG_HOME/omarchy/plugins/omarchy-rs.skills`; all four Agent states remain visible when one adapter is unavailable.
 - First delivery inventories and synchronizes existing local portable Skills; deleting canonical sources, remote marketplace browsing, and arbitrary project-root scans remain excluded.
@@ -120,6 +121,12 @@ Scenario: Unavailable Octos remains non-mutating
   Given no executable or advertised capability
   When scan and apply run
   Then Octoscode reports unavailable and no Octos state path is created or changed
+
+Scenario: Octoscode shows Codex backend Skills
+  Test: skills_octoscode_shows_backend_visible_codex_skills
+  Given an installed octoscode client and a Codex-native Agent Spec Skill
+  When the local inventory is scanned
+  Then the Octos tab includes that Skill as backend-visible without claiming an Octos-native installation
 
 ### Rule: exact-plan — Revalidate every synchronization mutation
 

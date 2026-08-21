@@ -29,8 +29,11 @@ The four adapters behave as follows:
 - Claude Code: manager-owned link in `~/.claude/skills`.
 - Codex: manager-owned link in `~/.codex/skills`.
 - Grok: native discovery of `~/.agents/skills`; no duplicate is created.
-- Octoscode: its public `octos skills --profile ...` command. The manager never
-  writes Octos instance directories or private state directly.
+- Octos native Skills: the public `octos skills --profile ...` command. The
+  manager never writes Octos instance directories or private state directly.
+- Octoscode client: when its Codex-compatible backend is installed, Codex-native
+  Skills are also shown in the **Octos** tab as `available via Codex backend`.
+  This is read-only visibility and does not claim an Octos-native installation.
 
 If Octoscode is absent, inventory and the other adapters continue working and
 the report marks Octoscode unavailable.
@@ -107,11 +110,12 @@ or Octos installations recorded as manager-owned. A regular file, directory,
 foreign link, changed source, stale plan, or wrong token is refused and
 reported per Agent.
 
-The Octos profile defaults to `octos`. Override its public CLI path or profile
-for all phases when needed:
+The Octos profile defaults to `octos`. Override its public CLI path, Octoscode
+client path, or profile for all phases when needed:
 
 ```bash
 export OMARCHY_RS_OCTOS="$HOME/.octos/bin/octos"
+export OMARCHY_RS_OCTOSCODE="$HOME/.cargo/bin/octoscode"
 export OMARCHY_RS_OCTOS_PROFILE="octos"
 ```
 
@@ -134,6 +138,7 @@ should receive the same portable Skill.
 | --- | --- |
 | `active` | The selected Agent currently discovers the Skill. |
 | `available` | A portable shared Skill can be synchronized to this Agent. |
+| `available via Codex backend` | Octoscode can see this Codex-native Skill through its compatible backend; it is not installed in the Octos native Skill store. |
 | `not installed` | The record has no activation surface for this Agent. |
 | `conflict` | A foreign file, directory, or link already owns the destination. |
 | `unavailable` | The Agent executable or required native capability is absent. |
@@ -197,9 +202,25 @@ export OMARCHY_RS_OCTOS_PROFILE="octos"
 omarchy-rs skills scan --json
 ```
 
+### Agent Spec works in Octoscode but is missing from the Octos tab
+
+Octos and Octoscode are separate executables. Octos owns the native Skill
+installer, while Octoscode may expose Codex-native Skills through its backend.
+Confirm that the client path is detectable, reinstall the panel, and refresh:
+
+```bash
+export OMARCHY_RS_OCTOSCODE="$HOME/.cargo/bin/octoscode"
+omarchy-rs skills install-plugin
+omarchy-rs skills scan --json
+```
+
+Agent Spec entries should then appear in the **Octos** tab with the status
+`available via Codex backend`. Synchronization and cancellation remain disabled
+for those read-only records; manage their source in the Codex Skill directory.
+
 ## Current scope
 
-Version 0.1.3 provides local inventory, per-Agent tabs, health reporting, and
+Version 0.1.6 provides local inventory, per-Agent tabs, health reporting, and
 guarded synchronization/cancellation. It does not edit Skill instruction
 bodies, search a remote marketplace, execute third-party installers, or scan
 all repositories under `~/Work` for project-local Skills.

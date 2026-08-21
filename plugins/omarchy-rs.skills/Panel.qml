@@ -67,7 +67,7 @@ Panel {
     var active = []
     var values = skill.activations || []
     for (var i = 0; i < values.length; i++)
-      if (values[i].state === "active" || values[i].state === "active-read-only" || values[i].state === "managed")
+      if (values[i].state === "active" || values[i].state === "active-read-only" || values[i].state === "managed" || values[i].state === "backend-visible")
         active.push(values[i].agent)
     return active.length ? active.join(" · ") : "not active"
   }
@@ -83,6 +83,7 @@ Panel {
     if (!activation) return "not installed"
     var state = String(activation.state || "unknown")
     if (state === "active" || state === "active-read-only" || state === "managed") return "active"
+    if (state === "backend-visible") return "available via Codex backend"
     if (state === "inactive") return "available"
     return state.replace(/-/g, " ")
   }

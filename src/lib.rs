@@ -12,6 +12,8 @@ pub mod codex;
 pub mod grok;
 #[path = "../crates/omarchy-learn/src/lib.rs"]
 pub mod learn;
+#[path = "../crates/omarchy-network/src/lib.rs"]
+pub mod network;
 #[path = "../crates/omarchy-agents/src/octoscode.rs"]
 pub mod octoscode;
 #[path = "../crates/omarchy-agents/src/rpc.rs"]

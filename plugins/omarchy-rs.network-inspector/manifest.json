@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "id": "omarchy-rs.network-inspector",
+  "name": "Network Inspector",
+  "version": "0.1.5",
+  "author": "Omarchy-rs",
+  "license": "MIT",
+  "description": "Inspect content-free network health, open Sniffnet, and request guarded Agent advice.",
+  "kinds": ["bar-widget"],
+  "entryPoints": { "barWidget": "Panel.qml" },
+  "barWidget": {
+    "displayName": "Network Inspector",
+    "description": "Show local network readiness, launch Sniffnet, and diagnose a redacted snapshot with an Agent.",
+    "category": "System",
+    "aliases": ["network-inspector", "sniffnet", "network-diagnosis"],
+    "allowMultiple": false,
+    "defaultSection": "right",
+    "defaults": { "agent": "codex" },
+    "schema": [
+      {
+        "key": "agent",
+        "type": "choice",
+        "label": "Diagnosis Agent",
+        "defaultValue": "codex",
+        "options": ["codex", "claude", "grok"]
+      }
+    ]
+  }
+}

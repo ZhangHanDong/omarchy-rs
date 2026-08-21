@@ -131,6 +131,7 @@ it as a user theme without modifying system-owned Omarchy files.
 - [Benchmark policy](docs/benchmarking.md)
 - [Dependency policy](docs/dependency-policy.md)
 - [Roadmap](docs/roadmap.md)
+- [Network Inspector](docs/components/network-inspector.md)
 - [Contributing](CONTRIBUTING.md)
 - [Project Contract](specs/project.spec.md)
 - [Agent Usage pilot Contract](specs/task-agent-usage-parity.spec.md)
